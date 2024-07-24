@@ -1,0 +1,35 @@
+{
+  "name": "nav-generator",
+  "version": "1.0.0",
+  "description": "navigation website generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "node scripts/generate.js",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaronlamz/nav-generator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aaronlamz/nav-generator/issues"
+  },
+  "homepage": "https://github.com/aaronlamz/nav-generator#readme",
+  "dependencies": {
+    "@vitejs/plugin-vue": "^5.1.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.6",
+    "vite": "^5.3.4",
+    "vue": "^3.4.33"
+  },
+  "devDependencies": {
+    "vue-router": "^4.4.0"
+  }
+}
