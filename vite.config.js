@@ -1,13 +1,13 @@
-// vite.config.js
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import path from 'path'
 
 export default defineConfig({
   plugins: [vue()],
   build: {
-    outDir: 'dist', // 确认输出目录
+    outDir: 'dist',
     rollupOptions: {
-      input: 'public/index.html', // 指定入口文件
+      input: path.resolve(__dirname, 'public/index.html'),
     },
   },
 })

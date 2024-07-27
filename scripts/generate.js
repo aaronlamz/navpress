@@ -1,7 +1,10 @@
-// scripts/generate.js
-const fs = require('fs');
-const path = require('path');
-const config = require('../config/index');
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import config from '../config/index.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 function generateNavComponent(nav) {
   return `
@@ -21,7 +24,7 @@ export default {
 
 <style scoped>
 </style>
-  `;
+  `
 }
 
 function generateSidebar(sidebar) {
@@ -42,7 +45,7 @@ export default {
 
 <style scoped>
 </style>
-  `;
+  `
 }
 
 function generatePageContent(page) {
@@ -77,22 +80,22 @@ export default {
 
 <style scoped>
 </style>
-  `;
+  `
 }
 
-const navComponentContent = generateNavComponent(config.nav);
-const sidebarComponentContent = generateSidebar(config.sidebar);
+const navComponentContent = generateNavComponent(config.nav)
+const sidebarComponentContent = generateSidebar(config.sidebar)
 const pages = [
-  { name: 'HomePage', title: 'Home', links: config.nav },
-  { name: 'AboutPage', title: 'About', links: config.nav },
-];
+  { name: 'HomePage', title: 'Home', links: config.nav.map(item => ({ href: item.link, text: item.text })) },
+  { name: 'AboutPage', title: 'About', links: config.nav.map(item => ({ href: item.link, text: item.text })) },
+]
 
-fs.writeFileSync(path.resolve(__dirname, '../src/components/NavComponent.vue'), navComponentContent);
-fs.writeFileSync(path.resolve(__dirname, '../src/components/Sidebar.vue'), sidebarComponentContent);
+fs.writeFileSync(path.resolve(__dirname, '../src/components/NavComponent.vue'), navComponentContent)
+fs.writeFileSync(path.resolve(__dirname, '../src/components/Sidebar.vue'), sidebarComponentContent)
 
 pages.forEach(page => {
-  const pageContent = generatePageContent(page);
-  fs.writeFileSync(path.resolve(__dirname, `../src/pages/${page.name}.vue`), pageContent);
-});
+  const pageContent = generatePageContent(page)
+  fs.writeFileSync(path.resolve(__dirname, `../src/pages/${page.name}.vue`), pageContent)
+})
 
-console.log('Pages generated successfully.');
+console.log('Pages generated successfully.')

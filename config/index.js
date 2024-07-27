@@ -1,5 +1,5 @@
 // config/config.js
-module.exports = {
+export default {
   title: 'My Static Site Generator',
   description: 'A simple static site generator with configurable navigation',
   nav: [

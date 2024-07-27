@@ -7,7 +7,7 @@
       <main class="flex-1 p-8">
         <h1 class="text-4xl font-bold mb-4">About</h1>
         <ul>
-          <li class="mb-2"><a href="undefined" class="text-blue-600">Home</a></li><li class="mb-2"><a href="undefined" class="text-blue-600">About</a></li>
+          <li class="mb-2"><a href="/" class="text-blue-600">Home</a></li><li class="mb-2"><a href="/about" class="text-blue-600">About</a></li>
         </ul>
       </main>
     </div>
