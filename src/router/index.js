@@ -8,7 +8,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createMemoryHistory(), // 使用 createMemoryHistory 而不是 createWebHashHistory
+  history: createMemoryHistory(), // 使用 createMemoryHistory 以支持 SSR
   routes,
 })
 

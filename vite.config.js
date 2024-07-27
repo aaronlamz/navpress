@@ -7,7 +7,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: path.resolve(__dirname, 'public/index.html'),
+      input: path.resolve(__dirname, 'index.html'), // 指向根目录中的 index.html
     },
+  },
+  server: {
+    open: true,  // 自动在浏览器中打开
   },
 })
