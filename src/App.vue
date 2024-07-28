@@ -2,9 +2,9 @@
   <div id="app">
     <Navbar :nav="config.nav" />
     <div class="container">
-      <Sidebar :sidebar="config.sidebar" @navigate="handleNavigate" />
+      <Sidebar :sidebar="config.sidebar" />
       <div class="content">
-        <router-view :children="currentChildren" :title="currentTitle" />
+        <router-view />
       </div>
     </div>
   </div>
@@ -22,15 +22,7 @@ export default {
   },
   data() {
     return {
-      config,
-      currentChildren: [],
-      currentTitle: ''
-    }
-  },
-  methods: {
-    handleNavigate(children, title) {
-      this.currentChildren = children
-      this.currentTitle = title
+      config
     }
   }
 }

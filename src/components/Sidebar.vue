@@ -2,7 +2,12 @@
   <aside>
     <ul>
       <li v-for="item in sidebar" :key="item.link">
-        <a @click="navigate(item.children, item.text)">{{ item.text }}</a>
+        <router-link :to="item.link">{{ item.text }}</router-link>
+        <ul v-if="item.items">
+          <li v-for="group in item.items" :key="group.link">
+            <a @click="scrollTo(group.link)">{{ group.text }}</a>
+          </li>
+        </ul>
       </li>
     </ul>
   </aside>
@@ -17,9 +22,12 @@ export default {
     }
   },
   methods: {
-    navigate(children, title) {
-      this.$emit('navigate', children, title)
-      this.$router.push(title.toLowerCase())
+    scrollTo(groupLink) {
+      const hash = groupLink.substring(1);
+      const element = document.getElementById(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   }
 }

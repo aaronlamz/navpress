@@ -1,8 +1,8 @@
 <template>
     <div>
       <h1>{{ title }}</h1>
-      <div v-for="group in children" :key="group.group">
-        <h2>{{ group.group }}</h2>
+      <div v-for="group in items" :key="group.link" :id="group.link.substring(1)">
+        <h2>{{ group.text }}</h2>
         <ul>
           <li v-for="item in group.items" :key="item.link">
             <a :href="item.link" target="_blank">{{ item.text }}</a>
@@ -15,7 +15,7 @@
   <script>
   export default {
     props: {
-      children: {
+      items: {
         type: Array,
         default: () => []
       },
