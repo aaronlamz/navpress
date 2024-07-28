@@ -1,33 +1,32 @@
 <template>
-    <div>
-      <h1>{{ title }}</h1>
-      <div v-for="group in items" :key="group.link" :id="group.link.substring(1)">
-        <h2>{{ group.text }}</h2>
-        <ul>
-          <li v-for="item in group.items" :key="item.link">
-            <a :href="item.link" target="_blank">{{ item.text }}</a>
-          </li>
-        </ul>
-      </div>
+  <div class="p-8">
+    <h1 class="text-4xl font-bold mb-4">{{ title }}</h1>
+    <div v-for="group in items" :key="group.link" :id="group.link.substring(1)" class="mb-8">
+      <h2 class="text-2xl font-semibold mb-2">{{ group.text }}</h2>
+      <ul class="space-y-2">
+        <li v-for="item in group.items" :key="item.link">
+          <a :href="item.link" target="_blank" class="text-blue-600 hover:underline">{{ item.text }}</a>
+        </li>
+      </ul>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    props: {
-      items: {
-        type: Array,
-        default: () => []
-      },
-      title: {
-        type: String,
-        default: ''
-      }
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    items: {
+      type: Array,
+      default: () => []
+    },
+    title: {
+      type: String,
+      default: ''
     }
   }
-  </script>
-  
-  <style>
-  /* 添加你的样式 */
-  </style>
-  
+}
+</script>
+
+<style scoped>
+/* 如果需要额外的样式，可以在这里添加 */
+</style>
