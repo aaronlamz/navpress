@@ -1,11 +1,11 @@
 <template>
-  <aside class="bg-gray-100 w-64 min-h-screen p-4 shadow-lg">
+  <aside class="bg-gray-100 dark:bg-gray-800 w-64 min-h-screen p-4 shadow-lg">
     <ul class="space-y-2">
       <li v-for="item in sidebar" :key="item.link">
-        <router-link :to="item.link" class="block text-gray-700 hover:bg-blue-100 p-2 rounded">{{ item.text }}</router-link>
+        <router-link :to="item.link" class="block text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 p-2 rounded">{{ item.text }}</router-link>
         <ul v-if="item.items" class="ml-4 mt-2 space-y-2">
           <li v-for="group in item.items" :key="group.link">
-            <a @click="scrollTo(group.link)" class="block text-gray-600 hover:bg-gray-200 p-2 rounded">{{ group.text }}</a>
+            <a @click="scrollTo(group.link)" class="block text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 p-2 rounded">{{ group.text }}</a>
           </li>
         </ul>
       </li>
