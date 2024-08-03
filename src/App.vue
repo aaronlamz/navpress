@@ -1,9 +1,9 @@
 <template>
   <div id="app" class="dark:bg-gray-900 min-h-screen">
     <Navbar :nav="config.nav" />
-    <div class="flex">
+    <div class="flex flex-col md:flex-row pt-16"> <!-- 使用 pt-16 而非 mt-16 -->
       <Sidebar :sidebar="config.sidebar" />
-      <div class="content flex-1 p-6 dark:bg-gray-900">
+      <div class="content-container flex-1 p-6 dark:bg-gray-900">
         <router-view />
       </div>
     </div>
@@ -29,15 +29,12 @@ export default {
 </script>
 
 <style>
-.flex {
-  display: flex;
-}
-.content {
+.content-container {
   flex: 1;
   padding: 20px;
   background-color: white;
 }
-.dark .content {
-  background-color: #1a202c; /* 使用 Tailwind CSS 的深色背景颜色 */
+.dark .content-container {
+  background-color: #1a202c;
 }
 </style>
