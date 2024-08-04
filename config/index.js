@@ -13,7 +13,7 @@ export default {
       items: [
         {
           text: 'Group 1',
-          link: '#group1',
+          link: '/#group1',
           items: [
             { text: 'Child 1', link: 'https://example.com/child1' },
             { text: 'Child 2', link: 'https://example.com/child2' },
@@ -21,7 +21,7 @@ export default {
         },
         {
           text: 'Group 2',
-          link: '#group2',
+          link: '/#group2',
           items: [
             { text: 'Child 3', link: 'https://example.com/child3' },
             { text: 'Child 4', link: 'https://example.com/child4' },
