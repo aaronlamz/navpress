@@ -1,11 +1,13 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Page from '../pages/LinksPage.vue'
+import { createRouter, createMemoryHistory, createWebHistory } from 'vue-router'
+import LinksPage from '../pages/LinksPage.vue'
 import config from '../../config/index.js'
+
+const isServer = typeof window === 'undefined';
 
 const generateRoutes = (sidebar) => {
   return sidebar.map(item => ({
     path: item.link,
-    component: Page,
+    component: LinksPage,
     props: {
       items: item.items || [],
       title: item.text
@@ -16,7 +18,7 @@ const generateRoutes = (sidebar) => {
 const routes = generateRoutes(config.sidebar)
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: isServer ? createMemoryHistory() : createWebHistory(),
   routes,
 })
 

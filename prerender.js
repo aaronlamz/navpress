@@ -11,7 +11,7 @@ async function prerender() {
   // 创建 Vite 服务器实例
   const server = await createServer({
     server: { middlewareMode: 'ssr' },
-    appType: 'custom'
+    appType: 'custom',
   })
 
   try {
@@ -19,7 +19,7 @@ async function prerender() {
     const { createApp } = await server.ssrLoadModule('/src/main.js')
     const { app, router } = createApp()
 
-    // 跳转到根路径
+    // 跳转到根路径，准备渲染
     router.push('/')
     await router.isReady()
 
@@ -48,11 +48,12 @@ async function prerender() {
     fs.writeFileSync(path.resolve(__dirname, 'dist/index.html'), html)
 
     // 删除多余的 public 目录
-    if (fs.existsSync(path.resolve(__dirname, 'dist/public'))) {
-      fs.rmSync(path.resolve(__dirname, 'dist/public'), { recursive: true, force: true })
+    const publicDir = path.resolve(__dirname, 'dist/public')
+    if (fs.existsSync(publicDir)) {
+      fs.rmSync(publicDir, { recursive: true, force: true })
     }
   } catch (e) {
-    console.error(e)
+    console.error('Error during prerendering:', e)
   } finally {
     server.close()
   }

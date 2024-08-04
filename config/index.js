@@ -9,7 +9,7 @@ export default {
   sidebar: [
     { 
       text: 'Home', 
-      link: '/home', 
+      link: '/', 
       items: [
         {
           text: 'Group 1',
