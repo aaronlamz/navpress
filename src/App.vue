@@ -1,9 +1,9 @@
 <template>
-  <div id="app" class="dark:bg-gray-900 min-h-screen">
+  <div id="app" class="dark:bg-gray-900 min-h-screen flex flex-col">
     <Navbar :nav="config.nav" />
-    <div class="flex flex-col md:flex-row pt-16"> <!-- 使用 pt-16 而非 mt-16 -->
-      <Sidebar :sidebar="config.sidebar" />
-      <div class="content-container flex-1 p-6 dark:bg-gray-900">
+    <div class="main-container flex flex-1 overflow-hidden">
+      <Sidebar :sidebar="config.sidebar" class="sidebar-container bg-gray-100 dark:bg-gray-800" />
+      <div class="content-container flex-1 overflow-y-auto p-6 dark:bg-gray-900">
         <router-view />
       </div>
     </div>
@@ -29,11 +29,37 @@ export default {
 </script>
 
 <style>
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 保持应用高度为视口高度 */
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.main-container {
+  margin-top: 4rem; /* 设置与导航栏相同的高度，确保内容不被遮挡 */
+  height: calc(100vh - 4rem); /* 确保内容区域的总高度为视口高度减去导航栏的高度 */
+  display: flex;
+}
+
+.sidebar-container {
+  width: 250px;
+  overflow-y: auto; /* 确保侧边栏可以滚动 */
+}
+
 .content-container {
   flex: 1;
+  overflow-y: auto; /* 使内容区域可滚动 */
   padding: 20px;
   background-color: white;
 }
+
 .dark .content-container {
   background-color: #1a202c;
 }

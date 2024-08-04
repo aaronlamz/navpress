@@ -3,7 +3,7 @@ export default {
   title: 'My Static Site Generator',
   description: 'A simple static site generator with configurable navigation',
   nav: [
-    { text: 'Home', link: '/home' },
+    { text: 'Home', link: '/' },
     { text: 'About', link: '/about' },
   ],
   sidebar: [
