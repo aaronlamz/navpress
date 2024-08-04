@@ -1,5 +1,5 @@
 <template>
-  <aside class="bg-gray-100 dark:bg-gray-800 w-64 min-h-screen p-4 shadow-lg">
+  <aside class="bg-gray-100 dark:bg-gray-800 w-64 p-4 shadow-lg">
     <ul class="space-y-2">
       <li v-for="(item, index) in sidebar" :key="item.link">
         <div class="flex items-center cursor-pointer" @click="toggleMenu(index)">

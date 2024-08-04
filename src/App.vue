@@ -47,6 +47,9 @@ export default {
   height: calc(100vh - 4rem); /* 确保内容区域的总高度为视口高度减去导航栏的高度 */
   display: flex;
 }
+.min-container-height{
+  min-height: calc(100vh - 8rem);
+}
 
 .sidebar-container {
   width: 250px;

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8 bg-gray-100 dark:bg-gray-900 min-h-screen">
+  <div class="p-8 bg-gray-100 dark:bg-gray-900 min-container-height">
     <h1 class="text-4xl font-bold mb-8 dark:text-white">{{ title }}</h1>
     <div class="space-y-12">
       <div v-for="group in items" :key="group.link" :id="group.link.substring(1)">
