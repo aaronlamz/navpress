@@ -1,7 +1,7 @@
 {
   "name": "nav-generator",
   "version": "1.0.0",
-  "description": "navigation website generator",
+  "description": "Easy navigation website generator",
   "main": "index.js",
   "type": "module",
   "scripts": {
