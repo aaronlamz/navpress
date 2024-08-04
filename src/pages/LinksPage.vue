@@ -5,7 +5,7 @@
       <div v-for="group in items" :key="group.link" :id="group.link.substring(1)">
         <h2 class="text-2xl font-semibold mb-4 dark:text-gray-200">{{ group.text }}</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="item in group.items" :key="item.link" class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden flex items-center p-4">
+          <div v-for="item in group.items" :key="item.link" class="card bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden flex items-center p-4 transition-transform transform hover:scale-105">
             <div class="flex-shrink-0">
               <img v-if="item.icon" :src="item.icon" alt="" class="w-10 h-10 mr-4" />
               <i v-else class="fas fa-folder text-green-500 w-10 h-10 mr-4"></i>
@@ -59,5 +59,12 @@ export default {
 </script>
 
 <style scoped>
-/* 样式调整 */
+.card {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  background-image: linear-gradient(135deg, #ff7e5f, #feb47b, #86a8e7, #7f7fd5);
+  transform: scale(1.05);
+}
 </style>
