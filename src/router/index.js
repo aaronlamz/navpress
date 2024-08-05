@@ -1,6 +1,5 @@
 import { createRouter, createMemoryHistory, createWebHashHistory } from 'vue-router'
 import LinksPage from '../pages/LinksPage.vue'
-import config from '../../config/index.js'
 
 const isServer = typeof window === 'undefined';
 
@@ -15,7 +14,7 @@ const generateRoutes = (sidebar) => {
   }))
 }
 
-const routes = generateRoutes(config.sidebar)
+const routes = generateRoutes(__USER_CONFIG__.sidebar)
 
 const router = createRouter({
   history: isServer ? createMemoryHistory() : createWebHashHistory(), // 使用 hash 模式

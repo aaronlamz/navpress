@@ -1,5 +1,5 @@
 {
-  "name": "nav-generator",
+  "name": "navpress",
   "version": "1.0.0",
   "description": "Easy navigation website generator",
   "main": "index.js",
@@ -11,6 +11,9 @@
     "dev": "vite",
     "build": "vite build && node prerender.js",
     "serve": "vite preview"
+  },
+  "bin": {
+    "navpress": "./bin/navpress.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +29,7 @@
   "dependencies": {
     "@vitejs/plugin-vue": "^5.1.0",
     "autoprefixer": "^10.4.19",
+    "commander": "^8.0.0",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",
     "vite": "^5.3.4",

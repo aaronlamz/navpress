@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import config from '../../config/index.js';
 export default {
   props: {
     nav: {
@@ -39,7 +38,7 @@ export default {
   data() {
     return {
       isDarkMode: false,
-      config
+      config:__USER_CONFIG__
     }
   },
   mounted() {

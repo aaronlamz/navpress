@@ -13,7 +13,6 @@
 <script>
 import Navbar from './components/Navbar.vue'
 import Sidebar from './components/Sidebar.vue'
-import config from '../config/index.js'
 
 export default {
   components: {
@@ -22,7 +21,7 @@ export default {
   },
   data() {
     return {
-      config
+      config: __USER_CONFIG__
     }
   }
 }
