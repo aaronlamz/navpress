@@ -3,7 +3,7 @@ export default {
   title: 'My Static Site Generator',
   description: 'A simple static site generator with configurable navigation',
   logo: '/images/logo.svg',
-  github: 'https://github.com/aaronlamz/nav-generator',
+  github: 'https://github.com/aaronlamz/navpress',
   nav: [
     { text: 'Home', link: '/' },
     { text: 'About', link: '/about' },
