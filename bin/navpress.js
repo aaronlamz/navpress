@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { execSync } from 'child_process';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { createServer, build } from 'vite';
+import { fileURLToPath } from 'url';
+import viteConfigFn from '../vite.config.js';
+import {prerender} from '../src/node/prerender.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,12 +22,21 @@ program
   .command('dev')
   .description('Start the development server')
   .option('-c, --config <path>', 'Path to configuration file', 'navpress.config.js')
-  .action((cmd) => {
-    const configPath = path.resolve(process.cwd(), cmd.config || 'navpress.config.js');
+  .action(async (cmd) => {
+    const configPath = path.resolve(process.cwd(), cmd.config);
     process.env.CONFIG_PATH = configPath;
+    const viteConfig = await viteConfigFn()
+    // 加载 vite 配置
+    const server = await createServer({
+      ...viteConfig,
+      configFile: false,
+      server: {
+        open: true,
+      },
+    });
 
-    // 使用 npx 执行 Vite 的开发服务器启动命令
-    execSync('npx vite', { stdio: 'inherit' });
+    await server.listen();
+    console.log('Development server started.');
   });
 
 program
@@ -33,15 +44,25 @@ program
   .description('Build the static site')
   .option('-c, --config <path>', 'Path to configuration file', 'navpress.config.js')
   .option('-o, --output <path>', 'Output directory', 'dist')
-  .action((cmd) => {
-    const configPath = path.resolve(process.cwd(), cmd.config || 'navpress.config.js');
-    const outputDir = path.resolve(process.cwd(), cmd.output || 'dist');
+  .action(async (cmd) => {
+    const configPath = path.resolve(process.cwd(), cmd.config);
+    const outputDir = path.resolve(process.cwd(), cmd.output );
     process.env.CONFIG_PATH = configPath;
     process.env.OUTPUT_DIR = outputDir;
+    const viteConfig = await viteConfigFn()
+    // 构建静态站点
+    await build({
+      ...viteConfig,
+      configFile: false,
+      build: {
+        outDir: outputDir,
+      },
+    });
 
-    // 使用 npx 执行 Vite 的构建命令
-    execSync('npx vite build', { stdio: 'inherit' });
-    execSync('node prerender.js', { stdio: 'inherit' });
+    // 预渲染步骤
+    await prerender()
+
+    console.log('Build completed.');
   });
 
 program.parse(process.argv);
