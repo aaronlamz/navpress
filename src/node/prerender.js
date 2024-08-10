@@ -1,11 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { createServer } from 'vite';
 import { renderToString } from '@vue/server-renderer';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export async function prerender() {
   // 创建 Vite 服务器实例
