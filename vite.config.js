@@ -22,17 +22,20 @@ const loadUserConfig = async () => {
 };
 
 export default defineConfig(async () => {
+  const outputDir = process.env.OUTPUT_DIR || path.resolve(__dirname, 'dist');    // 开发模式下输出到 navpress 包的 dist 目录
   const userConfig = await loadUserConfig();
-  const outputDir = process.env.OUTPUT_DIR || path.resolve(process.cwd(), 'dist');
+  
+ 
 
   // 修改为使用 navpress 包内的 index.html
-  const indexHtmlPath = path.resolve(__dirname, 'index.html');
+  const indexHtmlPath = path.resolve(__dirname, 'index.html')
 
   return {
     plugins: [vue()],
     define: {
       __USER_CONFIG__: JSON.stringify(userConfig),
     },
+    root: path.resolve(__dirname, ''),  // 开发模式下使用 navpress 包的目录
     build: {
       outDir: outputDir,
       rollupOptions: {

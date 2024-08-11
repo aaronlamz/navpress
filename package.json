@@ -30,6 +30,7 @@
     "@vitejs/plugin-vue": "^5.1.0",
     "autoprefixer": "^10.4.19",
     "commander": "^8.0.0",
+    "fs-extra": "^11.2.0",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",
     "vite": "^5.3.4",
