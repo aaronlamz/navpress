@@ -12,6 +12,9 @@
 - Built-in SSR support, automatically generating static HTML files.
 - Integrates with Tailwind CSS and Vue.js.
 
+## Preview
+![demo](./demo.png)
+
 ## Installation
 
 You can install `navpress` globally via npm:
