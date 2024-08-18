@@ -3,6 +3,8 @@ import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +34,16 @@ export default defineConfig(async () => {
 
   return {
     plugins: [vue()],
+    css: {
+      postcss: {
+        plugins: [
+          tailwindcss({
+            config: path.resolve(__dirname, 'tailwind.config.js'), // 明确指向 `tailwind.config.js` 的路径
+          }),
+          autoprefixer,
+        ],
+      },
+    },
     define: {
       __USER_CONFIG__: JSON.stringify(userConfig),
     },

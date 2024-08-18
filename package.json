@@ -12,7 +12,7 @@
     "serve": "vite preview"
   },
   "bin": {
-    "navpress": "./bin/navpress.js"
+    "navpress": "./bin/navpress.cjs"
   },
   "repository": {
     "type": "git",

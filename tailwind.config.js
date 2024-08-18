@@ -1,6 +1,10 @@
+const path = require("path");
 module.exports = {
-  content: ['./src/**/*.{vue,js,ts,jsx,tsx}', './index.html'],
-  darkMode: 'class',
+  content: [
+    path.resolve(__dirname, "./src/**/*.{vue,js,ts,jsx,tsx}"),
+    path.resolve(__dirname, "./index.html"),
+  ],
+  darkMode: "class",
   theme: {
     extend: {},
   },
@@ -8,4 +12,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-}
+};
