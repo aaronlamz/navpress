@@ -1,42 +1,43 @@
+
 # NavPress
 
-NavPress is a simple and fast static navigation site generator. It allows you to easily create a navigation website using a configuration file.
+[![npm version](https://img.shields.io/npm/v/navpress.svg)](https://www.npmjs.com/package/navpress)
+
+**NavPress** is a CLI tool for generating static navigation websites. It allows you to quickly build a navigation site through a configuration file, supporting both development and production modes.
 
 ## Features
 
-- **Easy Configuration**: Configure your navigation and sidebar using a single file.
-- **Dark Mode**: Built-in support for light and dark themes.
+- Simple Configuration: Define your navigation and sidebar through a single configuration file.
+- Supports both development and production builds.
+- Built-in SSR support, automatically generating static HTML files.
+- Integrates with Tailwind CSS and Vue.js.
 
 ## Installation
 
-To use NavPress in your project, you can install it via npm.
+You can install `navpress` globally via npm:
 
-### Install via npm
+```bash
+npm install -g navpress
+```
 
-1. **Navigate to your project directory**:
+Or install it locally in your project:
 
-   ```bash
-   cd your-project-directory
-   ```
+```bash
+npm install navpress --save-dev
+```
 
-2. **Install NavPress**:
+## Quick Start
 
-   ```bash
-   npm install navpress --save-dev
-   ```
+### 1. Create a Configuration File
 
-## Usage
-
-NavPress uses a configuration file `navpress.config.js` to generate the site. This configuration file should be placed in the root directory of your project.
-
-### Example `navpress.config.js`
+Create a `navpress.config.js` file in the root directory of your project and define your navigation and sidebar:
 
 ```javascript
 export default {
-  title: 'My Navigation Site',
-  description: 'A simple and customizable navigation site generator.',
+  title: 'My Static Site Generator',
+  description: 'A simple static site generator with configurable navigation',
   nav: [
-    { text: 'Home', link: '/home' },
+    { text: 'Home', link: '/' },
     { text: 'About', link: '/about' }
   ],
   sidebar: [
@@ -51,58 +52,63 @@ export default {
             { text: 'Child 1', link: 'https://example.com/child1' },
             { text: 'Child 2', link: 'https://example.com/child2' }
           ]
-        },
-        {
-          text: 'Group 2',
-          link: '#group2',
-          items: [
-            { text: 'Child 3', link: 'https://example.com/child3' },
-            { text: 'Child 4', link: 'https://example.com/child4' }
-          ]
         }
       ]
     },
-    { text: 'About', link: '/about' }
+    {
+      text: 'About',
+      link: '/about',
+      items: [
+        {
+          text: 'Group A',
+          link: '#groupA',
+          items: [
+            { text: 'Child A1', link: 'https://example.com/childA1' }
+          ]
+        }
+      ]
+    }
   ]
 };
 ```
 
-### Development
+### 2. Start the Development Server
 
-To start a development server with hot-reloading, use the following command:
-
-```bash
-npx navpress dev
-```
-
-This will start a development server at [http://localhost:3000](http://localhost:3000). You can view the site and make changes to your configuration and source files. The server will automatically reload to reflect your changes.
-
-### Build
-
-To build the site for production, run:
+Start the development server with the following command:
 
 ```bash
-npx navpress build
+navpress dev
 ```
 
-This command will generate static files in the `dist` directory, ready for deployment. The output directory can be customized using the `--output` flag.
+The development server will automatically open in your browser and display the navigation page.
 
-### Custom Configuration File
+### 3. Build the Static Website
 
-If you want to use a custom configuration file path, you can specify it using the `--config` option with both `dev` and `build` commands.
-
-**Example:**
+Build the static website with the following command:
 
 ```bash
-npx navpress dev --config ./path/to/custom.config.js
-npx navpress build --config ./path/to/custom.config.js --output ./custom-output
+navpress build
 ```
 
-## Deployment
+The built static files will be output to the `dist` directory. You can deploy the `dist` directory to any static web hosting service.
 
-After building the site, you can deploy the contents of the `dist` directory to any static hosting service, such as GitHub Pages, Netlify, or Vercel.
+## Configuration Options
 
-## Contributing
+### navpress.config.js
 
-Contributions are welcome! Please open an issue or submit a pull request if you have any improvements or bug fixes.
+- `title`: The website title.
+- `description`: The website description.
+- `nav`: The configuration for the navigation bar, an array with each item containing `text` and `link`.
+- `sidebar`: The configuration for the sidebar, an array that can nest multiple groups.
 
+## Tailwind CSS
+
+`navpress` comes with Tailwind CSS built-in, allowing you to use it directly in your project. If you need to customize the Tailwind configuration, you can find and modify the `tailwind.config.js` file inside the `navpress` package.
+
+## Contribution
+
+We welcome contributions of any kind! If you find bugs or have new ideas, please submit an [Issue](https://github.com/aaronlamz/navpress/issues) or open a [Pull Request](https://github.com/aaronlamz/navpress/pulls).
+
+## License
+
+[MIT](https://github.com/aaronlamz/navpress/blob/main/LICENSE)
