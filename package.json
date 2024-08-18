@@ -1,0 +1,40 @@
+{
+  "name": "navpress",
+  "version": "1.0.0-beta.3",
+  "description": "Easy navigation website generator",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "dev": "vite",
+    "build": "vite build && node ./src/node/prerender.cjs",
+    "serve": "vite preview"
+  },
+  "bin": {
+    "navpress": "./bin/navpress.cjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaronlamz/nav-generator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aaronlamz/nav-generator/issues"
+  },
+  "homepage": "https://github.com/aaronlamz/nav-generator#readme",
+  "dependencies": {
+    "@vitejs/plugin-vue": "^5.1.0",
+    "autoprefixer": "^10.4.19",
+    "commander": "^8.0.0",
+    "fs-extra": "^11.2.0",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.6",
+    "vite": "^5.3.4",
+    "vue": "^3.4.33",
+    "vue-router": "^4.4.0"
+  },
+  "devDependencies": {}
+}
