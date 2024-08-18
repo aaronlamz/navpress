@@ -2,14 +2,8 @@
 
 const { Command } = require('commander');
 const path = require('path');
-const fs = require('fs-extra');
 const { createServer, build } = require('vite');
-// const { fileURLToPath } = require('url');
 const { prerender } = require('../src/node/prerender.cjs');
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
 const packageJson = require(path.join(__dirname, '../package.json'));
 
 const program = new Command();
