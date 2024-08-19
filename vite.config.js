@@ -26,14 +26,27 @@ const loadUserConfig = async () => {
 export default defineConfig(async () => {
   const outputDir = process.env.OUTPUT_DIR || path.resolve(__dirname, 'dist');    // 开发模式下输出到 navpress 包的 dist 目录
   const userConfig = await loadUserConfig();
-  
- 
 
   // 修改为使用 navpress 包内的 index.html
-  const indexHtmlPath = path.resolve(__dirname, 'index.html')
+  const indexHtmlPath = path.resolve(__dirname, 'index.html');
+  const basePath = userConfig.base || '/';
 
   return {
-    plugins: [vue()],
+    base: basePath,
+    plugins: [
+      vue(),
+      {
+        name: 'html-transform',
+        transformIndexHtml(html) {
+          // 动态替换 title 和 meta 标签内容
+          return html
+            .replace(/<title>.*<\/title>/, `<title>${userConfig.meta?.title || userConfig.title}</title>`)
+            .replace(/<meta name="description" content=".*">/, `<meta name="description" content="${userConfig.meta?.description || ''}">`)
+            .replace(/<meta name="keywords" content=".*">/, `<meta name="keywords" content="${userConfig.meta?.keywords || ''}">`)
+            .replace(/<meta name="author" content=".*">/, `<meta name="author" content="${userConfig.meta?.author || ''}">`);
+        },
+      },
+    ],
     css: {
       postcss: {
         plugins: [
