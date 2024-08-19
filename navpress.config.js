@@ -6,10 +6,10 @@ export default {
   github: 'https://github.com/aaronlamz/navpress',
   base:'/navpress/',
   meta: {
-    title: 'My Custom Title',
-    description: 'This is a description for SEO.',
-    keywords: 'static site, generator, SEO',
-    author: 'Author Name',
+    title: 'My Navpress',
+    description: 'Navpress - a simple static site generator with configurable navigation',
+    keywords: 'static site, generator, navpress, vue',
+    author: 'aaronlamz',
   },
   sidebar: [
     { 
