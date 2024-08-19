@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { reactive } from 'vue';
+import { reactive, onMounted } from 'vue';
 
 export default {
   props: {
@@ -34,15 +34,21 @@ export default {
       required: true
     }
   },
-  setup() {
+  setup(props) {
     const expandedMenu = reactive({});
+
+    // 在组件挂载时根据配置设置展开状态
+    onMounted(() => {
+      props.sidebar.forEach((item, index) => {
+        // 如果配置了 expanded 属性，则使用它；否则默认展开
+        expandedMenu[index] = item.expanded !== undefined ? item.expanded : true;
+      });
+    });
+
     return { expandedMenu };
   },
   methods: {
     toggleMenu(index) {
-      if (!(index in this.expandedMenu)) {
-        this.expandedMenu[index] = false;
-      }
       this.expandedMenu[index] = !this.expandedMenu[index];
     },
     handleGroupClick(parentLink, groupLink) {

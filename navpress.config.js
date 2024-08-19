@@ -2,12 +2,15 @@
 export default {
   title: 'My Static Site Generator',
   description: 'A simple static site generator with configurable navigation',
-  logo: '/images/logo.svg',
+  logo: '/navpress/images/logo.svg',
   github: 'https://github.com/aaronlamz/navpress',
-  nav: [
-    { text: 'Home', link: '/' },
-    { text: 'About', link: '/about' },
-  ],
+  base:'/navpress/',
+  meta: {
+    title: 'My Custom Title',
+    description: 'This is a description for SEO.',
+    keywords: 'static site, generator, SEO',
+    author: 'Author Name',
+  },
   sidebar: [
     { 
       text: 'Home', 
@@ -52,6 +55,7 @@ export default {
     { 
       text: 'About', 
       link: '/about',
+      expanded: false,
       items: [
         {
           text: 'Group A',
