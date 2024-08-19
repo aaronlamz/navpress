@@ -18,9 +18,13 @@
     "type": "git",
     "url": "git+https://github.com/aaronlamz/nav-generator.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["navpress"],
+  "author": "aaronlamz",
+  "engines": {
+    "node": ">=20 <21"
+  },
+  "engineStrict": true,
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/aaronlamz/nav-generator/issues"
   },
