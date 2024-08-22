@@ -5,6 +5,7 @@
       <Sidebar :sidebar="config.sidebar" class="sidebar-container bg-gray-100 dark:bg-gray-800" />
       <div class="content-container flex-1 overflow-y-auto p-6 dark:bg-gray-900">
         <router-view />
+        <FooterComponent />
       </div>
     </div>
   </div>
@@ -13,11 +14,13 @@
 <script>
 import Navbar from './components/Navbar.vue'
 import Sidebar from './components/Sidebar.vue'
+import FooterComponent from './components/FooterComponent.vue';
 
 export default {
   components: {
     Navbar,
-    Sidebar
+    Sidebar,
+    FooterComponent
   },
   data() {
     return {

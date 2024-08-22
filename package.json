@@ -1,6 +1,6 @@
 {
   "name": "navpress",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "description": "Easy navigation website generator",
   "main": "index.js",
   "type": "module",
@@ -21,7 +21,7 @@
   "keywords": ["navpress"],
   "author": "aaronlamz",
   "engines": {
-    "node": ">=20 <21"
+    "node": ">=20"
   },
   "engineStrict": true,
   "license": "MIT",
