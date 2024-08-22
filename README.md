@@ -136,10 +136,6 @@ The built static files will be output to the `dist` directory. You can deploy th
 - `description`: The website description.
 - `sidebar`: The configuration for the sidebar, an array that can nest multiple groups.
 
-## Tailwind CSS
-
-`navpress` comes with Tailwind CSS built-in, allowing you to use it directly in your project. If you need to customize the Tailwind configuration, you can find and modify the `tailwind.config.js` file inside the `navpress` package.
-
 ## Contribution
 
 We welcome contributions of any kind! If you find bugs or have new ideas, please submit an [Issue](https://github.com/aaronlamz/navpress/issues) or open a [Pull Request](https://github.com/aaronlamz/navpress/pulls).
