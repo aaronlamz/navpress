@@ -3,33 +3,30 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # 当推送到 main 分支时触发
+      - main  # 或者你正在使用的其他主分支
       - dev
 
-jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
+permissions:
+  contents: write  # 确保 GITHUB_TOKEN 有写权限
+  pages: write
 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'  # 确保使用 Node.js 20
-
       - name: Install dependencies
-        run: yarn install
+        run: yarn install  # 或者 npm install
 
-      - name: Build the project
-        run: yarn build
+      - name: Build project
+        run: yarn build  # 或者 npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/navpress  # 部署到 GitHub Pages 的 navpress 目录下
-          # 可以根据需要设置 `cname` 参数
-          # cname: example.com
-          destination_dir: navpress  # 将构建内容放置在 `navpress` 目录下
+          publish_dir: ./dist
+          destination_dir: navpress  # 部署到 navpress 子目录
+          cname: aaronlamz.github.io  # 可选: 如果你需要自定义域名
