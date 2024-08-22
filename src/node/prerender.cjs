@@ -69,4 +69,8 @@ async function prerender() {
   }
 }
 
+if (require.main === module) {
+  prerender().catch(err => console.error(err));
+}
+
 module.exports = { prerender };
