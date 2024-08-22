@@ -14,7 +14,7 @@
 - Integrates with Tailwind CSS and Vue.js.
 
 ## Preview
-![demo](./demo.png)
+[View Demo](https://aaronlamz.github.io/navpress/)
 
 ## Installation
 
