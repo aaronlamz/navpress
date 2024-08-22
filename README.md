@@ -21,13 +21,13 @@
 You can install `navpress` globally via npm:
 
 ```bash
-npm install -g navpress
+npm install -g navpress@1.0.0-beta.5
 ```
 
 Or install it locally in your project:
 
 ```bash
-npm install navpress --save-dev
+npm install navpress@1.0.0-beta.5 --save-dev
 ```
 
 ## Quick Start
