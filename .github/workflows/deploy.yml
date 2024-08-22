@@ -1,0 +1,32 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # 或者你正在使用的其他主分支
+      - dev
+
+permissions:
+  contents: write  # 确保 GITHUB_TOKEN 有写权限
+  pages: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: yarn install  # 或者 npm install
+
+      - name: Build project
+        run: yarn build  # 或者 npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+        #   destination_dir: navpress  # 部署到 navpress 子目录，不指定就是根目录
+        #   cname: aaronlamz.github.io  # 可选: 如果你需要自定义域名

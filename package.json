@@ -21,7 +21,7 @@
   "keywords": ["navpress"],
   "author": "aaronlamz",
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   },
   "engineStrict": true,
   "license": "MIT",
