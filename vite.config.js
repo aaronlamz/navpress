@@ -15,7 +15,7 @@ const loadUserConfig = async () => {
 
   try {
     await fs.access(configPath);
-    userConfig = await import(configPath).then(module => module.default);
+    userConfig = await import(configPath + `?timestamp=${new Date().getTime()}`).then(module => module.default);
   } catch (error) {
     console.error(`Failed to load config from ${configPath}`, error);
   }
@@ -24,10 +24,8 @@ const loadUserConfig = async () => {
 };
 
 export default defineConfig(async () => {
-  const outputDir = process.env.OUTPUT_DIR || path.resolve(__dirname, 'dist');    // 开发模式下输出到 navpress 包的 dist 目录
-  const userConfig = await loadUserConfig();
-
-  // 修改为使用 navpress 包内的 index.html
+  const outputDir = process.env.OUTPUT_DIR || path.resolve(__dirname, 'dist');
+  let userConfig = await loadUserConfig();
   const indexHtmlPath = path.resolve(__dirname, 'index.html');
   const basePath = userConfig.base || '/';
 
@@ -46,12 +44,32 @@ export default defineConfig(async () => {
             .replace(/<meta name="author" content=".*">/, `<meta name="author" content="${userConfig.meta?.author || ''}">`);
         },
       },
+      {
+        name: 'watch-external', 
+        configureServer(server) {
+          const configPath = process.env.CONFIG_PATH || path.resolve(process.cwd(), 'navpress.config.js');
+          server.watcher.add(configPath);
+          server.watcher.on('change', async (file) => {
+            if (file === configPath) {
+              userConfig = await loadUserConfig();
+              // 更新 define 配置中的 __USER_CONFIG__
+              server.config.define['__USER_CONFIG__'] = JSON.stringify(userConfig);
+              server.ws.send({
+                type: 'custom',
+                event: 'config-updated',
+                data: userConfig,
+              });
+              console.log(`Config file changed: ${configPath}. Reload`);
+            }
+          });
+        }
+      }
     ],
     css: {
       postcss: {
         plugins: [
           tailwindcss({
-            config: path.resolve(__dirname, 'tailwind.config.js'), // 明确指向 `tailwind.config.js` 的路径
+            config: path.resolve(__dirname, 'tailwind.config.js'),
           }),
           autoprefixer,
         ],
@@ -60,15 +78,19 @@ export default defineConfig(async () => {
     define: {
       __USER_CONFIG__: JSON.stringify(userConfig),
     },
-    root: path.resolve(__dirname, ''),  // 开发模式下使用 navpress 包的目录
+    root: path.resolve(__dirname),
     build: {
       outDir: outputDir,
       rollupOptions: {
-        input: indexHtmlPath,  // 指向 `navpress` 源代码中的 `index.html`
+        input: indexHtmlPath,
       },
     },
     server: {
-      open: true,  // 自动在浏览器中打开
+      open: true,
+      watch: {
+        usePolling: true,
+        interval: 300,
+      },
     },
   };
 });

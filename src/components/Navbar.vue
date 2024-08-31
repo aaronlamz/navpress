@@ -2,9 +2,9 @@
   <nav class="bg-white dark:bg-gray-900 shadow-md fixed w-full z-50">
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
       <div class="flex items-center">
-        <img :src="config.logo" alt="Logo" class="h-10 w-auto mr-3" />
+        <img :src="$config.logo" alt="Logo" class="h-10 w-auto mr-3" />
         <span class="text-xl font-semibold text-gray-900 dark:text-white">
-          {{ config.title }}
+          {{ $config.title }}
         </span>
       </div>
       <!-- <ul class="hidden md:flex space-x-6">
@@ -13,7 +13,7 @@
         </li>
       </ul> -->
       <div class="flex items-center">
-        <a v-if="config.github" :href="config.github" target="_blank" rel="noopener noreferrer" class="ml-4">
+        <a v-if="$config.github" :href="$config.github" target="_blank" rel="noopener noreferrer" class="ml-4">
           <svg class="w-6 h-6 text-gray-900 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
             fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path

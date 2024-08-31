@@ -1,8 +1,8 @@
 <template>
   <div id="app" class="dark:bg-gray-900 min-h-screen flex flex-col">
-    <Navbar :nav="config.nav" />
+    <Navbar :nav="$config.nav" />
     <div class="main-container flex flex-1 overflow-hidden">
-      <Sidebar :sidebar="config.sidebar" class="sidebar-container bg-gray-100 dark:bg-gray-800" />
+      <Sidebar :sidebar="$config.sidebar" class="sidebar-container bg-gray-100 dark:bg-gray-800" />
       <div class="content-container flex-1 overflow-y-auto p-6 dark:bg-gray-900">
         <router-view />
         <FooterComponent />
@@ -23,9 +23,7 @@ export default {
     FooterComponent
   },
   data() {
-    return {
-      config: __USER_CONFIG__
-    }
+    return {}
   }
 }
 </script>
