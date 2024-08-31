@@ -9,7 +9,9 @@
     "clean": "rm -rf dist",
     "dev": "vite",
     "build": "vite build && node ./src/node/prerender.cjs",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "lint": "eslint --ext .js,.vue src",
+    "format": "prettier --write \"src/**/*.{js,vue,ts,json,css,scss,md}\""
   },
   "bin": {
     "navpress": "./bin/navpress.cjs"
@@ -18,7 +20,9 @@
     "type": "git",
     "url": "git+https://github.com/aaronlamz/nav-generator.git"
   },
-  "keywords": ["navpress"],
+  "keywords": [
+    "navpress"
+  ],
   "author": "aaronlamz",
   "engines": {
     "node": ">=18"
@@ -40,5 +44,23 @@
     "vue": "^3.4.33",
     "vue-router": "^4.4.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-vue": "^9.27.0",
+    "husky": "^9.1.5",
+    "lint-staged": "^15.2.9",
+    "prettier": "^3.3.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,vue,ts,json,css,scss,md}": [
+      "prettier --write"
+    ]
+  }
 }

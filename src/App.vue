@@ -2,8 +2,13 @@
   <div id="app" class="dark:bg-gray-900 min-h-screen flex flex-col">
     <Navbar :nav="$config.nav" />
     <div class="main-container flex flex-1 overflow-hidden">
-      <Sidebar :sidebar="$config.sidebar" class="sidebar-container bg-gray-100 dark:bg-gray-800" />
-      <div class="content-container flex-1 overflow-y-auto p-6 dark:bg-gray-900">
+      <Sidebar
+        :sidebar="$config.sidebar"
+        class="sidebar-container bg-gray-100 dark:bg-gray-800"
+      />
+      <div
+        class="content-container flex-1 overflow-y-auto p-6 dark:bg-gray-900"
+      >
         <router-view />
         <FooterComponent />
       </div>
@@ -14,17 +19,17 @@
 <script>
 import Navbar from './components/Navbar.vue'
 import Sidebar from './components/Sidebar.vue'
-import FooterComponent from './components/FooterComponent.vue';
+import FooterComponent from './components/FooterComponent.vue'
 
 export default {
   components: {
     Navbar,
     Sidebar,
-    FooterComponent
+    FooterComponent,
   },
   data() {
     return {}
-  }
+  },
 }
 </script>
 
@@ -44,10 +49,12 @@ export default {
 
 .main-container {
   margin-top: 4rem; /* 设置与导航栏相同的高度，确保内容不被遮挡 */
-  height: calc(100vh - 4rem); /* 确保内容区域的总高度为视口高度减去导航栏的高度 */
+  height: calc(
+    100vh - 4rem
+  ); /* 确保内容区域的总高度为视口高度减去导航栏的高度 */
   display: flex;
 }
-.min-container-height{
+.min-container-height {
   min-height: calc(100vh - 8rem);
 }
 
