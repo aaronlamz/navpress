@@ -1,7 +1,5 @@
-
 # NavPress
 
-[中文](./README.zh_CN.md)
 [![npm version](https://img.shields.io/npm/v/navpress.svg)](https://www.npmjs.com/package/navpress)
 [![Deploy to GitHub Pages](https://github.com/aaronlamz/navpress/actions/workflows/deploy.yml/badge.svg)](https://github.com/aaronlamz/navpress/actions/workflows/deploy.yml)
 
@@ -15,6 +13,7 @@
 - Integrates with Tailwind CSS and Vue.js.
 
 ## Preview
+
 [View Demo](https://aaronlamz.github.io/navpress/)
 
 ## Installation
@@ -43,7 +42,7 @@ export default {
   description: 'A simple static site generator with configurable navigation',
   logo: '/navpress/images/logo.svg',
   github: 'https://github.com/aaronlamz/navpress',
-  base:'/navpress/',
+  base: '/navpress/',
   meta: {
     title: 'My Custom Title',
     description: 'This is a description for SEO.',
@@ -51,9 +50,9 @@ export default {
     author: 'Author Name',
   },
   sidebar: [
-    { 
-      text: 'Home', 
-      link: '/', 
+    {
+      text: 'Home',
+      link: '/',
       items: [
         {
           text: 'Group 1',
@@ -62,7 +61,7 @@ export default {
             { text: 'Child 1', link: 'https://example.com/child1' },
             { text: 'Child 2', link: 'https://example.com/child2' },
             { text: 'Child 2', link: 'https://example.com/child2' },
-          ]
+          ],
         },
         {
           text: 'Group 2',
@@ -71,7 +70,7 @@ export default {
             { text: 'Child 3', link: 'https://example.com/child3' },
             { text: 'Child 4', link: 'https://example.com/child4' },
             { text: 'Child 2', link: 'https://example.com/child2' },
-          ]
+          ],
         },
         {
           text: 'Group 3',
@@ -79,7 +78,7 @@ export default {
           items: [
             { text: 'Child 3', link: 'https://example.com/child3' },
             { text: 'Child 4', link: 'https://example.com/child4' },
-          ]
+          ],
         },
         {
           text: 'Group 4',
@@ -87,23 +86,21 @@ export default {
           items: [
             { text: 'Child 3', link: 'https://example.com/child3' },
             { text: 'Child 4', link: 'https://example.com/child4' },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     },
-    { 
-      text: 'About', 
+    {
+      text: 'About',
       link: '/about',
       expanded: false,
       items: [
         {
           text: 'Group A',
           link: '#groupA',
-          items: [
-            { text: 'Child A1', link: 'https://example.com/childA1' },
-          ]
-        }
-      ]
+          items: [{ text: 'Child A1', link: 'https://example.com/childA1' }],
+        },
+      ],
     },
   ],
 }
