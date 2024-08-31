@@ -20,13 +20,13 @@
 你可以通过 npm 全局安装 `navpress`：
 
 ```bash
-npm install -g navpress@1.0.0-beta.5
+npm install -g navpress@1.0.0-beta.6
 ```
 
 或者在你的项目中本地安装：
 
 ```bash
-npm install navpress@1.0.0-beta.5 --save-dev
+npm install navpress@1.0.0-beta.6 --save-dev
 ```
 
 ## 快速开始
