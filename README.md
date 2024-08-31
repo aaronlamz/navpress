@@ -126,6 +126,15 @@ navpress build
 
 The built static files will be output to the `dist` directory. You can deploy the `dist` directory to any static web hosting service.
 
+## Fork repository and deploy to gihub pages
+
+1. Fork this repository.
+2. Go to your forked repository's settings on GitHub.Scroll down to the "GitHub Pages" section.
+3. Under "Source", select the `gh-pages` branch from the dropdown menu.
+4. Click "Save".
+
+After a few minutes, your site should be available at `https://<your-github-username>.github.io/navpress/`.
+
 ## Configuration Options
 
 ### navpress.config.js
