@@ -64,15 +64,17 @@ export default {
   },
   methods: {
     scrollToAnchor(hash) {
-      if (hash) {
-        nextTick(() => {
-          const element = document.querySelector(hash)
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' })
-          }
-        })
-      }
-    },
+    if (hash) {
+      const decodedHash = decodeURIComponent(hash)
+
+      nextTick(() => {
+        const element = document.querySelector(decodedHash)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
+      })
+    }
+  },
   },
 }
 </script>

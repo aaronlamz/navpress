@@ -40,9 +40,27 @@ export function createRouterInstance(config) {
   }
 
   const routes = generateRoutes(config.sidebar)
-
-  return createRouter({
-    history: isServer ? createMemoryHistory() : createWebHashHistory(), // 使用 hash 模式
+  const router = createRouter({
+    history: isServer ? createMemoryHistory() : createWebHashHistory(),
     routes,
   })
+
+  // 路由全局前置守卫，处理路径中的 %23 锚点编码问题
+  router.beforeEach((to, from, next) => {
+    // 检查路径中是否包含编码的 %23
+    if (to.path.includes('%23')) {
+      // 解码路径
+      const decodedPath = decodeURIComponent(to.path)
+      // 替换掉 path 中的 %23 为正常的 #
+      if (decodedPath !== to.path) {
+        next({ ...to, path: decodedPath, replace: true })
+      } else {
+        next()
+      }
+    } else {
+      next()
+    }
+  })
+
+  return router
 }
