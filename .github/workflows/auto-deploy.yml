@@ -1,4 +1,4 @@
-name: Auto Deploy
+name: Auto Deploy to NPM
 
 on:
   push:
@@ -10,38 +10,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  check-deploy:
-    runs-on: ubuntu-latest
-    outputs:
-      should-deploy: ${{ steps.check.outputs.should-deploy }}
-      deploy-type: ${{ steps.check.outputs.deploy-type }}
-    
-    steps:
-    - name: Check commit message for deploy
-      id: check
-      run: |
-        COMMIT_MSG="${{ github.event.head_commit.message }}"
-        echo "Commit message: $COMMIT_MSG"
-        
-        # 检查是否包含 deploy 标识
-        if [[ $COMMIT_MSG =~ \[deploy\] ]] || [[ $COMMIT_MSG =~ deploy: ]]; then
-          echo "should-deploy=true" >> $GITHUB_OUTPUT
-          
-          # 确定发布类型
-          if [[ $COMMIT_MSG =~ \[deploy:major\] ]] || [[ $COMMIT_MSG =~ deploy:major ]]; then
-            echo "deploy-type=major" >> $GITHUB_OUTPUT
-          elif [[ $COMMIT_MSG =~ \[deploy:minor\] ]] || [[ $COMMIT_MSG =~ deploy:minor ]]; then
-            echo "deploy-type=minor" >> $GITHUB_OUTPUT
-          else
-            echo "deploy-type=patch" >> $GITHUB_OUTPUT
-          fi
-        else
-          echo "should-deploy=false" >> $GITHUB_OUTPUT
-        fi
-
   deploy:
-    needs: check-deploy
-    if: needs.check-deploy.outputs.should-deploy == 'true'
     runs-on: ubuntu-latest
     
     steps:
@@ -89,8 +58,19 @@ jobs:
     - name: Bump version and publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        DEPLOY_TYPE: ${{ needs.check-deploy.outputs.deploy-type }}
       run: |
+        # 根据提交信息确定版本类型
+        COMMIT_MSG="${{ github.event.head_commit.message }}"
+        echo "Commit message: $COMMIT_MSG"
+        
+        if [[ $COMMIT_MSG =~ \[deploy:major\] ]] || [[ $COMMIT_MSG =~ deploy:major ]] || [[ $COMMIT_MSG =~ breaking: ]]; then
+          DEPLOY_TYPE="major"
+        elif [[ $COMMIT_MSG =~ \[deploy:minor\] ]] || [[ $COMMIT_MSG =~ deploy:minor ]] || [[ $COMMIT_MSG =~ feat: ]]; then
+          DEPLOY_TYPE="minor"
+        else
+          DEPLOY_TYPE="patch"
+        fi
+        
         echo "Deploying with type: $DEPLOY_TYPE"
         
         # 根据类型选择版本增量
