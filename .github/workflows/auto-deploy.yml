@@ -51,23 +51,26 @@ jobs:
       with:
         node-version: '18'
         registry-url: 'https://registry.npmjs.org'
+        
+    - name: Setup Yarn
+      run: npm install -g yarn
 
     - name: Cache dependencies
       uses: actions/cache@v3
       with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-node-
+          ${{ runner.os }}-yarn-
 
     - name: Install dependencies
-      run: npm ci
+      run: yarn install --frozen-lockfile
 
     - name: Run tests (if available)
-      run: npm test || echo "No tests found"
+      run: yarn test || echo "No tests found"
 
     - name: Build package
-      run: npm run build
+      run: yarn build
 
     - name: Configure Git
       run: |
