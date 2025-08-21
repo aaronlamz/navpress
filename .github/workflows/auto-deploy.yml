@@ -61,8 +61,12 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
           echo "always-auth=true" >> ~/.npmrc
-          echo "npm config list:"
+          echo "=== npm config list ==="
           npm config list
+          echo "=== npm whoami ==="
+          npm whoami || echo "npm whoami failed"
+          echo "=== npm view navpress ==="
+          npm view navpress || echo "npm view navpress failed"
 
       - name: Bump version and publish
         run: |
@@ -116,7 +120,7 @@ jobs:
 
           # 发布到 npm
           echo "Publishing to npm..."
-          npm publish
+          npm publish --access public
 
       - name: Get version for release
         id: get-version
