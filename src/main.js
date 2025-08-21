@@ -14,7 +14,9 @@ async function loadLatestConfig() {
       if (resp.ok) {
         return await resp.json()
       }
-    } catch (e) {}
+    } catch (e) {
+      // 忽略错误，继续尝试其他方法
+    }
     try {
       const mod = await import(
         /* @vite-ignore */ '/navpress.config.js?t=' + Date.now()
@@ -25,7 +27,9 @@ async function loadLatestConfig() {
     }
   }
   // 生产或 SSR 回退到构建期注入的配置
-  return typeof __USER_CONFIG__ !== 'undefined' ? __USER_CONFIG__ : {}
+  return typeof window !== 'undefined' && window.__USER_CONFIG__
+    ? window.__USER_CONFIG__
+    : {}
 }
 
 // console debug removed for production-like cleanliness
