@@ -96,12 +96,14 @@ export default defineConfig(async () => {
           // SPA fallback 中间件 - 对于所有路由返回 index.html
           server.middlewares.use((req, res, next) => {
             // 跳过 API 端点和静态资源
-            if (req.url.startsWith('/__navpress_config') || 
-                req.url.startsWith('/@') || 
-                req.url.includes('.')) {
+            if (
+              req.url.startsWith('/__navpress_config') ||
+              req.url.startsWith('/@') ||
+              req.url.includes('.')
+            ) {
               return next()
             }
-            
+
             // 对于所有其他路径，返回 index.html
             req.url = '/index.html'
             next()
