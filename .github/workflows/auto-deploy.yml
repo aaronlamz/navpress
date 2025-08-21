@@ -120,7 +120,13 @@ jobs:
 
           # 发布到 npm
           echo "Publishing to npm..."
-          npm publish --access public
+          echo "Checking if package exists in registry..."
+          if npm view navpress@$NEW_VERSION >/dev/null 2>&1; then
+            echo "Package navpress@$NEW_VERSION already exists in registry, skipping publish"
+          else
+            echo "Package does not exist, publishing..."
+            npm publish --access public
+          fi
 
       - name: Get version for release
         id: get-version
