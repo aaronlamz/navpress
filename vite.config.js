@@ -73,9 +73,15 @@ export default defineConfig(async () => {
           // 在开发模式下，如果有 base 路径，添加重定向中间件（必须在最前面）
           if (userConfig.base && userConfig.base !== '/') {
             server.middlewares.use((req, res, next) => {
+              // 只对根路径进行重定向，避免循环重定向
               if (req.url === '/' || req.url === '') {
                 res.writeHead(302, { Location: userConfig.base })
                 res.end()
+                return
+              }
+              // 如果已经在 base 路径下，不再重定向
+              if (req.url.startsWith(userConfig.base)) {
+                next()
                 return
               }
               next()
