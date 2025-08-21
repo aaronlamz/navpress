@@ -141,18 +141,34 @@ jobs:
           echo "Attempting to publish version $NEW_VERSION..."
 
           # 尝试发布，如果失败则使用force
+          PUBLISH_SUCCESS=false
           if npm publish --access public; then
             echo "Successfully published navpress@$NEW_VERSION"
+            PUBLISH_SUCCESS=true
           else
             echo "Regular publish failed, trying with --force..."
-            npm publish --access public --force
+            if npm publish --access public --force; then
+              echo "Successfully published navpress@$NEW_VERSION with --force"
+              PUBLISH_SUCCESS=true
+            else
+              echo "Force publish also failed, attempting to republish entire package..."
+              echo "This will create a fresh package entry in npm registry"
+              if npm publish --access public --force --registry https://registry.npmjs.org/; then
+                echo "Successfully republished entire package"
+                PUBLISH_SUCCESS=true
+              else
+                echo "All publish attempts failed"
+              fi
+            fi
           fi
 
-          # 如果还是失败，尝试重新发布整个包
-          if [ $? -ne 0 ]; then
-            echo "Force publish also failed, attempting to republish entire package..."
-            echo "This will create a fresh package entry in npm registry"
-            npm publish --access public --force --registry https://registry.npmjs.org/
+          # 如果发布失败，回滚版本号
+          if [ "$PUBLISH_SUCCESS" = false ]; then
+            echo "Publishing failed, rolling back version number..."
+            git reset --hard HEAD~1
+            git tag -d "v$NEW_VERSION" || echo "Tag deletion failed"
+            echo "Version rollback completed. Package.json is back to previous version."
+            exit 1
           fi
 
       - name: Get version for release
