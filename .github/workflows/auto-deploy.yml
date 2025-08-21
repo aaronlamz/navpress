@@ -101,7 +101,12 @@ jobs:
           git add package.json yarn.lock
           git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
 
-          # 创建 git tag
+          # 创建 git tag (如果已存在则删除)
+          if git tag -l "v$NEW_VERSION" | grep -q "v$NEW_VERSION"; then
+            echo "Tag v$NEW_VERSION already exists, deleting it..."
+            git tag -d "v$NEW_VERSION"
+            git push origin --delete "v$NEW_VERSION" || echo "Remote tag deletion failed, continuing..."
+          fi
           git tag "v$NEW_VERSION"
 
           # 配置远程 URL 并推送更改和标签
