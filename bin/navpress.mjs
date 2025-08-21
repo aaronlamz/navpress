@@ -39,21 +39,33 @@ program
     process.env.CONFIG_PATH = configPath
     const viteConfig = await loadViteConfig()
 
-    const server = await createServer({
-      ...viteConfig,
-      configFile: false,
-      server: {
-        open: true,
-        port: 5173,
-        strictPort: false, // 允许使用其他端口
-      },
-    })
+         // 获取 base 路径来决定打开的 URL
+     const basePath = viteConfig.base || '/'
+     const openUrl = basePath === '/' ? true : basePath
 
-    await server.listen()
-    const serverUrl = `http://localhost:${server.config.server.port || 5173}`
-    console.log(`\n  Development server running at: ${serverUrl}`)
-    console.log(`  Local:   ${serverUrl}`)
-    console.log(`  Network: use --host to expose\n`)
+     const server = await createServer({
+       ...viteConfig,
+       configFile: false,
+       server: {
+         open: openUrl,
+         port: 5173,
+         strictPort: false, // 允许使用其他端口
+       },
+     })
+
+     await server.listen()
+     const port = server.config.server.port || 5173
+     const basePath = viteConfig.base || '/'
+     const serverUrl = `http://localhost:${port}`
+     const fullUrl = basePath === '/' ? serverUrl : `${serverUrl}${basePath}`
+     
+     console.log(`\n  Development server running at:`)
+     console.log(`  Local:   ${fullUrl}`)
+     console.log(`  Network: use --host to expose`)
+     if (basePath !== '/') {
+       console.log(`  Base path: ${basePath}`)
+     }
+     console.log()
   })
 
 program

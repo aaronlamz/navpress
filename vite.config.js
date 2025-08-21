@@ -81,6 +81,18 @@ export default defineConfig(async () => {
             }
           })
 
+          // 在开发模式下，如果有 base 路径，添加重定向中间件
+          if (userConfig.base && userConfig.base !== '/') {
+            server.middlewares.use('/', (req, res, next) => {
+              if (req.url === '/' || req.url === '') {
+                res.writeHead(302, { Location: userConfig.base })
+                res.end()
+                return
+              }
+              next()
+            })
+          }
+
           // 监听配置文件变化
           server.watcher.add(configPath)
 
