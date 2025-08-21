@@ -62,15 +62,15 @@ jobs:
           # 根据提交信息确定版本类型
           COMMIT_MSG="${{ github.event.head_commit.message }}"
           echo "Commit message: $COMMIT_MSG"
-
-                  if [[ $COMMIT_MSG =~ \[deploy:major\] ]] || [[ $COMMIT_MSG =~ deploy:major ]] || [[ $COMMIT_MSG =~ ^breaking: ]]; then
-          DEPLOY_TYPE="major"
-        elif [[ $COMMIT_MSG =~ \[deploy:minor\] ]] || [[ $COMMIT_MSG =~ deploy:minor ]] || [[ $COMMIT_MSG =~ ^feat: ]]; then
-          DEPLOY_TYPE="minor"
-        else
-          DEPLOY_TYPE="patch"
-        fi
-
+          
+          if [[ $COMMIT_MSG =~ \[deploy:major\] ]] || [[ $COMMIT_MSG =~ deploy:major ]] || [[ $COMMIT_MSG =~ ^breaking: ]]; then
+            DEPLOY_TYPE="major"
+          elif [[ $COMMIT_MSG =~ \[deploy:minor\] ]] || [[ $COMMIT_MSG =~ deploy:minor ]] || [[ $COMMIT_MSG =~ ^feat: ]]; then
+            DEPLOY_TYPE="minor"
+          else
+            DEPLOY_TYPE="patch"
+          fi
+          
           echo "Deploying with type: $DEPLOY_TYPE"
 
           # 根据类型选择版本增量
@@ -102,18 +102,18 @@ jobs:
           git push origin main
           git push origin "v$NEW_VERSION"
 
-                  # 配置 npm 认证并发布
-        echo "Configuring npm authentication..."
-        npm config set registry https://registry.npmjs.org/
-        npm config set //registry.npmjs.org/:_authToken $NODE_AUTH_TOKEN
-        
-        # 验证认证配置
-        echo "npm whoami result:"
-        npm whoami || echo "npm whoami failed, but continuing with publish"
-        
-        # 发布包
-        echo "Publishing to npm..."
-        npm publish
+          # 配置 npm 认证并发布
+          echo "Configuring npm authentication..."
+          npm config set registry https://registry.npmjs.org/
+          npm config set //registry.npmjs.org/:_authToken $NODE_AUTH_TOKEN
+          
+          # 验证认证配置
+          echo "npm whoami result:"
+          npm whoami || echo "npm whoami failed, but continuing with publish"
+          
+          # 发布包
+          echo "Publishing to npm..."
+          npm publish
 
       - name: Get version for release
         id: get-version
