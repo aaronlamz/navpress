@@ -2,67 +2,37 @@
   <div>
     <!-- 侧边栏 -->
     <transition name="slide">
-      <aside
-        v-if="isSidebarOpen || isDesktop"
-        class="bg-gray-100 dark:bg-gray-800 w-64 sm:w-64 p-4 shadow-lg fixed sm:relative z-40 transition-transform transform"
+      <aside v-if="isSidebarOpen || isDesktop"
+        class="w-64 sm:w-64 p-4 fixed sm:relative z-40 transition-transform transform backdrop-blur-md bg-white/60 dark:bg-gray-800/40 border border-white/20 dark:border-white/10 shadow-md rounded-2xl will-change-transform"
         :class="{
           '-translate-x-full': !isSidebarOpen && !isDesktop,
           'translate-x-0': isSidebarOpen || isDesktop,
-        }"
-      >
+        }">
         <ul class="space-y-2">
           <li v-for="(item, index) in sidebar" :key="item.link">
             <div
-              class="flex items-center cursor-pointer justify-between"
-              @click="toggleMenu(index)"
-            >
-              <div class="flex items-center">
-                <img
-                  v-if="item.icon"
-                  :src="item.icon"
-                  alt=""
-                  class="w-5 h-5 mr-2"
-                />
-                <i
-                  v-else
-                  class="fas fa-folder text-blue-500 w-5 h-5 mr-2"
-                ></i>
-                <span
-                  class="block text-gray-700 dark:text-gray-300 p-2 rounded flex-1"
-                >
-                  {{ item.text }}
-                </span>
-              </div>
-              <i
-                :class="expandedMenu[index] ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"
-                class="text-gray-500"
-              ></i>
+              class="flex items-center justify-between rounded-xl px-3 py-2.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-600/20 dark:to-purple-600/20 hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 backdrop-blur-sm border border-blue-200/40 dark:border-blue-400/20 shadow-md">
+              <button type="button" class="flex items-center flex-1 text-left focus:outline-none"
+                @click.stop="goToTopLevel(item.link)">
+                <img :src="item.icon || defaultFolderIcon" alt=""
+                  class="w-5 h-5 mr-3 text-blue-600 dark:text-blue-400" />
+                <span class="block text-gray-800 dark:text-gray-100 font-medium py-1 flex-1">{{ item.text }}</span>
+              </button>
+              <button type="button"
+                class="ml-2 px-2 py-1 rounded-lg hover:bg-white/40 dark:hover:bg-white/20 text-blue-600 dark:text-blue-400 focus:outline-none transition-colors"
+                @click.stop="toggleMenu(index)" aria-label="Toggle submenu">
+                <i :class="expandedMenu[index] ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+              </button>
             </div>
-            <transition
-              name="drawer"
-              @before-enter="beforeEnter"
-              @enter="enter"
-              @leave="leave"
-            >
-              <ul
-                v-show="expandedMenu[index]"
-                class="ml-4 mt-2 space-y-2 submenu-list"
-              >
+            <transition name="accordion" @enter="onEnter" @after-enter="onAfterEnter" @leave="onLeave"
+              @after-leave="onAfterLeave">
+              <ul v-show="expandedMenu[index]" class="ml-4 mt-2 space-y-1.5 submenu-list smooth">
                 <li v-for="group in item.items" :key="group.link">
-                  <a
-                    @click="handleGroupClick(item.link, group.link)"
-                    class="submenu-item block text-gray-600 dark:text-gray-400 p-2 rounded-md flex items-center cursor-pointer"
-                  >
-                    <img
-                      v-if="group.icon"
-                      :src="group.icon"
-                      alt=""
-                      class="w-4 h-4 mr-2"
-                    />
-                    <i
-                      v-else
-                      class="fas fa-folder-open text-gray-500 w-4 h-4 mr-2"
-                    ></i>
+                  <a @click="handleGroupClick(item.link, group.link)"
+                    class="submenu-item block text-gray-600 dark:text-gray-300 px-3 py-2 rounded-lg flex items-center cursor-pointer bg-white/60 hover:bg-white/80 dark:bg-white/10 dark:hover:bg-white/20 border border-gray-200/50 dark:border-gray-600/30 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div class="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mr-3 flex-shrink-0"></div>
+                    <img :src="group.icon || defaultSubmenuIcon" alt=""
+                      class="w-4 h-4 mr-2.5 flex-shrink-0 text-gray-500 dark:text-gray-400" />
                     {{ group.text }}
                   </a>
                 </li>
@@ -77,6 +47,9 @@
 
 <script>
 import { reactive, ref, onMounted, onUnmounted } from "vue";
+import { generateNavUrl } from "../utils/urlHelper.js";
+import defaultFolderIcon from "../assets/icons/default-folder.svg";
+import defaultSubmenuIcon from "../assets/icons/default-submenu.svg";
 
 export default {
   props: {
@@ -92,6 +65,16 @@ export default {
       type: Function,
       required: true,
     },
+    urlFormat: {
+      type: String,
+      default: 'query',
+    },
+  },
+  data() {
+    return {
+      defaultFolderIcon,
+      defaultSubmenuIcon,
+    };
   },
   setup(props) {
     const expandedMenu = reactive({});
@@ -127,27 +110,91 @@ export default {
       this.expandedMenu[index] = !this.expandedMenu[index];
     },
     handleGroupClick(parentLink, groupLink) {
-      const fullPath = `${parentLink}${groupLink}`;
-      if (fullPath.startsWith("http")) {
-        window.open(fullPath, "_blank");
-      } else {
-        this.$router.push(fullPath);
+      // debug removed
+
+      // 如果是外部链接，直接打开
+      if (groupLink.startsWith("http")) {
+        window.open(groupLink, "_blank");
+        return;
       }
+
+      // 如果是锚点链接，根据配置的格式生成URL
+      if (groupLink.startsWith("#")) {
+        const section = groupLink.substring(1); // 移除 # 号
+        const currentPath = this.$route.path;
+        const targetPath = parentLink && typeof parentLink === 'string' ? parentLink : currentPath;
+        // debug removed
+
+        if (this.urlFormat === 'query') {
+          // 使用查询参数: /target-path?section=group1
+          // debug removed
+          this.$router.push({
+            path: targetPath,
+            query: { section: section }
+          });
+        } else if (this.urlFormat === 'path') {
+          // 使用路径参数: /target-path/group1
+          // debug removed
+          const newPath = `${targetPath}/${section}`;
+          this.$router.push(newPath);
+        } else {
+          // 使用锚点: /target-path#group1
+          // debug removed
+          this.$router.push({
+            path: targetPath,
+            hash: `#${section}`
+          });
+        }
+      } else {
+        // 普通路由跳转
+        // debug removed
+        this.$router.push(parentLink);
+      }
+
+      // 移动端关闭侧边栏
       if (!this.isDesktop) {
         this.toggleSidebar();
       }
     },
-    beforeEnter(el) {
-      el.style.maxHeight = "0";
-      el.style.opacity = "0";
+    goToTopLevel(path) {
+      if (!path || typeof path !== 'string') return;
+      if (this.$route.path === path) return;
+      // 切换页面时清理原 section 参数，避免跨页残留滚动
+      this.$router.push({ path });
     },
-    enter(el) {
-      el.style.maxHeight = `${el.scrollHeight}px`;
-      el.style.opacity = "1";
+    // 更顺滑的高度过渡
+    onEnter(el) {
+      el.style.overflow = 'hidden'
+      el.style.height = '0px'
+      el.style.opacity = '0'
+      requestAnimationFrame(() => {
+        const target = el.scrollHeight
+        el.style.willChange = 'height, opacity'
+        el.style.height = target + 'px'
+        el.style.opacity = '1'
+      })
     },
-    leave(el) {
-      el.style.maxHeight = "0";
-      el.style.opacity = "0";
+    onAfterEnter(el) {
+      el.style.height = 'auto'
+      el.style.overflow = 'visible'
+      el.style.willChange = ''
+    },
+    onLeave(el) {
+      el.style.overflow = 'hidden'
+      el.style.willChange = 'height, opacity'
+      const current = el.scrollHeight
+      el.style.height = current + 'px'
+      el.style.opacity = '1'
+      requestAnimationFrame(() => {
+        el.style.height = '0px'
+        el.style.opacity = '0'
+      })
+    },
+    onAfterLeave(el) {
+      el.style.height = ''
+      el.style.opacity = ''
+      el.style.overflow = ''
+      el.style.willChange = ''
     },
   },
 };
@@ -163,28 +210,36 @@ export default {
 }
 
 .submenu-item:hover {
-  background-image: linear-gradient(
-    135deg,
-    #e0eafc,
-    #cfdef3
-  );
+  background-image: linear-gradient(135deg,
+      #e0eafc,
+      #cfdef3);
 }
 
-.drawer-enter-active,
-.drawer-leave-active {
-  transition:
-    max-height 0.3s ease,
-    opacity 0.3s ease;
+.accordion-enter-active,
+.accordion-leave-active {
+  transition: height 200ms cubic-bezier(0.33, 1, 0.68, 1), opacity 140ms ease;
 }
 
-.drawer-enter,
-.drawer-leave-to {
-  max-height: 0;
+.accordion-enter-from,
+.accordion-leave-to {
+  height: 0;
   opacity: 0;
+}
+
+.accordion-enter-to,
+.accordion-leave-from {
+  height: var(--accordion-content-height);
+  opacity: 1;
 }
 
 .submenu-list {
   overflow: hidden;
+  contain: layout paint;
+  will-change: height, opacity;
+}
+
+.submenu-list.smooth>* {
+  transition: opacity 120ms ease;
 }
 
 @media (max-width: 640px) {
@@ -198,9 +253,11 @@ export default {
 .slide-leave-active {
   transition: transform 0.3s ease;
 }
+
 .slide-enter {
   transform: translateX(-100%);
 }
+
 .slide-leave-to {
   transform: translateX(-100%);
 }

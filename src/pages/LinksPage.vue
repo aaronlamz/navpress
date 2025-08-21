@@ -4,38 +4,21 @@
       {{ title }}
     </h1>
     <div class="space-y-8">
-      <div
-        v-for="group in items"
-        :key="group.link"
-        :id="group.link.substring(1)"
-        class="group-container bg-white dark:bg-gray-800 rounded-lg shadow-md p-4"
-      >
-        <h2 class="text-lg sm:text-2xl font-semibold mb-4 dark:text-gray-200">
-          {{ group.text }}
+      <div v-for="group in items" :key="group.link" :id="getGroupId(group.link)"
+        class="group-container bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+        <h2 class="text-lg sm:text-2xl font-semibold mb-4 dark:text-gray-200 flex items-center">
+          <span class="mr-2">{{ group.text }}</span>
+          <span class="text-sm text-gray-500 dark:text-gray-400 font-normal">
+            ({{ group.items?.length || 0 }} 个项目)
+          </span>
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div
-            v-for="item in group.items"
-            :key="item.link"
-            class="card bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition"
-          >
-            <img
-              v-if="item.icon"
-              :src="item.icon"
-              alt=""
-              class="w-10 h-10 flex-shrink-0"
-            />
-            <i
-              v-else
-              class="fas fa-folder text-green-500 w-10 h-10 flex-shrink-0"
-            ></i>
-            <a
-              :href="item.link"
-              target="_blank"
-              class="flex-1 text-sm sm:text-base text-gray-800 dark:text-gray-200"
-            >
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div v-for="item in group.items" :key="item.link"
+            class="card bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition">
+            <img :src="item.icon || defaultLinkIcon" alt="" class="w-10 h-10 flex-shrink-0 rounded text-green-500" />
+            <a :href="item.link" target="_blank" class="flex-1 text-sm sm:text-base text-gray-800 dark:text-gray-200">
               <div class="font-medium">{{ item.text }}</div>
-              <p class="text-gray-500 dark:text-gray-400">
+              <p class="text-gray-500 dark:text-gray-400 text-xs">
                 {{ item.description || 'No description available.' }}
               </p>
             </a>
@@ -43,11 +26,22 @@
         </div>
       </div>
     </div>
+
+    <!-- 滚动到顶部按钮 -->
+    <button v-show="showScrollTop" @click="scrollToTop"
+      class="fixed bottom-8 right-8 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50"
+      title="回到顶部">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 开发模式下显示滚动调试信息 -->
+    <!-- 调试浮层已移除 -->
   </div>
 </template>
 
 <script>
-import { nextTick } from 'vue'
+import { nextTick, ref, onMounted, onUnmounted } from 'vue'
+import defaultLinkIcon from '../assets/icons/default-link.svg'
 
 export default {
   props: {
@@ -60,53 +54,283 @@ export default {
       default: '',
     },
   },
+  setup() {
+    const showScrollTop = ref(false)
+    const scrollY = ref(0)
+    const windowHeight = ref(0)
+    const pageHeight = ref(0)
+    const currentSection = ref('')
+    const targetSection = ref('')
+    const isDev = ref(false)
+
+    const handleScroll = () => {
+      showScrollTop.value = window.scrollY > 300
+      scrollY.value = window.scrollY
+      windowHeight.value = window.innerHeight
+      pageHeight.value = document.documentElement.scrollHeight
+    }
+
+    const scrollToTop = () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    }
+
+    // 强制滚动到顶部的方法
+    const forceScrollToTop = () => {
+      window.scrollTo(0, 0)
+    }
+
+    onMounted(() => {
+      window.addEventListener('scroll', handleScroll)
+      // 初始化滚动信息
+      handleScroll()
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('scroll', handleScroll)
+    })
+
+    return {
+      showScrollTop,
+      scrollToTop,
+      forceScrollToTop,
+      defaultLinkIcon,
+      scrollY,
+      windowHeight,
+      pageHeight,
+      currentSection,
+      targetSection,
+      isDev
+    }
+  },
   watch: {
-    $route(to) {
-      this.scrollToAnchor(to.hash)
+    $route(to, from) {
+      // debug removed
+
+      // 如果是不同的页面，先滚动到顶部
+      if (from.path !== to.path) {
+        this.forceScrollToTop();
+        // debug removed
+      }
+
+      // 延迟处理锚点滚动，确保页面先滚动到顶部
+      setTimeout(() => {
+        // 优先处理查询参数中的 section
+        if (to.query.section) {
+          // debug removed
+          this.scrollToSection(to.query.section);
+        } else if (to.params.section) {
+          // 处理路径参数中的 section
+          // debug removed
+          this.scrollToSection(to.params.section);
+        } else if (to.hash) {
+          // 如果没有查询参数，则处理锚点
+          // debug removed
+          this.scrollToAnchor(to.hash);
+        } else {
+          // debug removed
+        }
+      }, 200);
     },
   },
   mounted() {
-    this.scrollToAnchor(this.$route.hash)
+    // 组件挂载时，优先检查查询参数，然后是路径参数，最后是锚点
+    // debug removed
+
+    if (this.$route.query.section) {
+      // debug removed
+      this.scrollToSection(this.$route.query.section);
+    } else if (this.$route.params.section) {
+      // debug removed
+      this.scrollToSection(this.$route.params.section);
+    } else if (this.$route.hash) {
+      // debug removed
+      this.scrollToAnchor(this.$route.hash);
+    } else {
+      // debug removed
+    }
   },
   methods: {
-    scrollToAnchor(hash) {
-      if (hash) {
-        const decodedHash = decodeURIComponent(hash)
-        nextTick(() => {
-          const element = document.getElementById(decodedHash.replace('#', ''))
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' })
-          }
-        })
+    // 获取分组的ID，处理不同的link格式
+    getGroupId(link) {
+      if (link.startsWith('#')) {
+        return link.substring(1); // 移除 # 号
+      } else if (link.startsWith('http')) {
+        // 如果是外部链接，生成一个唯一的ID
+        return `external-${Date.now()}`;
+      } else {
+        // 如果是内部路由，使用路径作为ID
+        return link.replace(/[^a-zA-Z0-9]/g, '-');
       }
     },
+
+    scrollToSection(section) {
+      // debug removed
+      this.targetSection = section;
+
+      // 使用 setTimeout 确保DOM完全渲染
+      setTimeout(() => {
+        const element = document.getElementById(section);
+        if (element) {
+          // debug removed
+          this.scrollToElement(element, section);
+        } else {
+          // debug removed
+          // 尝试查找包含该文本的元素
+          this.findElementByText(section);
+        }
+      }, 100);
+    },
+
+    scrollToAnchor(hash) {
+      if (hash) {
+        const decodedHash = decodeURIComponent(hash);
+        const section = decodedHash.replace('#', '');
+        // debug removed
+        nextTick(() => {
+          const element = document.getElementById(section);
+          if (element) {
+            // debug removed
+            this.scrollToElement(element, section);
+          } else {
+            // debug removed
+            // 尝试查找包含该文本的元素
+            this.findElementByText(section);
+          }
+        });
+      }
+    },
+
+    // 优化的滚动到元素方法
+    scrollToElement(element, sectionName) {
+      // 优先使用原生滚动至顶部，配合 scroll-margin-top 精准对齐
+      try {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (e) {
+        // 回退方案：计算偏移位置
+        const navbarHeight = 80;
+        const offset = 30;
+        const rect = element.getBoundingClientRect();
+        const targetPosition = window.pageYOffset + rect.top - navbarHeight - offset;
+        window.scrollTo({ top: Math.max(0, targetPosition), behavior: 'smooth' });
+      }
+
+      // 添加高亮效果
+      this.highlightElement(element);
+      // 更新当前section
+      this.currentSection = sectionName;
+    },
+
+    // 通过文本内容查找元素
+    findElementByText(text) {
+      const elements = document.querySelectorAll('h2, h3, .group-container');
+      for (const element of elements) {
+        if (element.textContent.toLowerCase().includes(text.toLowerCase())) {
+          // debug removed
+          this.scrollToElement(element, text);
+          return;
+        }
+      }
+      // debug removed
+    },
+
+    // 高亮元素
+    highlightElement(element) {
+      // 移除之前的高亮
+      document.querySelectorAll('.highlight-anchor').forEach(el => {
+        el.classList.remove('highlight-anchor');
+      });
+
+      // 添加高亮效果
+      element.classList.add('highlight-anchor');
+
+      // 3秒后移除高亮
+      setTimeout(() => {
+        element.classList.remove('highlight-anchor');
+      }, 3000);
+    }
   },
 }
 </script>
 
 <style scoped>
 .card {
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
 
 .card:hover {
-  transform: scale(1.05);
-  background-image: linear-gradient(135deg, #ff7e5f, #feb47b);
+  transform: translateY(-1px);
+  border-color: #e5e7eb;
+  /* 更轻的边框色 */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
 }
 
 /* 针对小屏幕的优化样式 */
 .group-container {
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+  /* 让元素通过 scrollIntoView 顶到视口顶部时留出固定导航的空间 */
+  scroll-margin-top: 110px;
+  /* 80(navbar) + 30(offset) */
 }
 
 .group-container:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
+/* 高亮效果 */
+.highlight-anchor {
+  animation: highlightFade 0.8s ease-in-out;
+  border: 2px solid rgba(59, 130, 246, 0.35);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+}
+
+@keyframes highlightFade {
+  0% {
+    border-color: rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.35);
+  }
+
+  100% {
+    border-color: rgba(59, 130, 246, 0.35);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+  }
+}
+
+/* 响应式网格 */
 @media (max-width: 640px) {
   .card {
     flex-direction: column;
     text-align: center;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 滚动到顶部按钮动画 */
+button {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
