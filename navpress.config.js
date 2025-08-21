@@ -17,7 +17,7 @@ export default {
   sidebar: [
     {
       text: '前端开发',
-      link: '/frontend',
+      link: '/',
       items: [
         {
           text: '框架工具',
