@@ -2,7 +2,7 @@ name: Auto Deploy to NPM
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: write
@@ -12,99 +12,100 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0
-        persist-credentials: true
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: true
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        registry-url: 'https://registry.npmjs.org'
-        
-    - name: Setup Yarn
-      run: npm install -g yarn
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
 
-    - name: Cache dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/yarn
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+      - name: Setup Yarn
+        run: npm install -g yarn
 
-    - name: Install dependencies
-      run: yarn install --frozen-lockfile
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
-    - name: Run tests (if available)
-      run: yarn test || echo "No tests found"
-      
-    - name: Run linter (optional)
-      run: yarn lint || echo "Linting issues found, but continuing deployment"
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
 
-    - name: Build package
-      run: yarn build
+      - name: Run tests (if available)
+        run: yarn test || echo "No tests found"
 
-    - name: Configure Git
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+      - name: Run linter (optional)
+        run: yarn lint || echo "Linting issues found, but continuing deployment"
 
-    - name: Bump version and publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: |
-        # 根据提交信息确定版本类型
-        COMMIT_MSG="${{ github.event.head_commit.message }}"
-        echo "Commit message: $COMMIT_MSG"
-        
-        if [[ $COMMIT_MSG =~ \[deploy:major\] ]] || [[ $COMMIT_MSG =~ deploy:major ]] || [[ $COMMIT_MSG =~ breaking: ]]; then
+      - name: Build package
+        run: yarn build
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Bump version and publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # 根据提交信息确定版本类型
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          echo "Commit message: $COMMIT_MSG"
+
+                  if [[ $COMMIT_MSG =~ \[deploy:major\] ]] || [[ $COMMIT_MSG =~ deploy:major ]] || [[ $COMMIT_MSG =~ ^breaking: ]]; then
           DEPLOY_TYPE="major"
-        elif [[ $COMMIT_MSG =~ \[deploy:minor\] ]] || [[ $COMMIT_MSG =~ deploy:minor ]] || [[ $COMMIT_MSG =~ feat: ]]; then
+        elif [[ $COMMIT_MSG =~ \[deploy:minor\] ]] || [[ $COMMIT_MSG =~ deploy:minor ]] || [[ $COMMIT_MSG =~ ^feat: ]]; then
           DEPLOY_TYPE="minor"
         else
           DEPLOY_TYPE="patch"
         fi
-        
-        echo "Deploying with type: $DEPLOY_TYPE"
-        
-        # 根据类型选择版本增量
-        case $DEPLOY_TYPE in
-          major)
-            npm version major --no-git-tag-version
-            ;;
-          minor)
-            npm version minor --no-git-tag-version
-            ;;
-          *)
-            npm version patch --no-git-tag-version
-            ;;
-        esac
-        
-        # 获取新版本号
-        NEW_VERSION=$(node -p "require('./package.json').version")
-        echo "New version: $NEW_VERSION"
-        
-        # 提交版本更改
-        git add package.json yarn.lock
-        git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
-        
-        # 创建 git tag
-        git tag "v$NEW_VERSION"
-        
-        # 配置远程 URL 并推送更改和标签
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        git push origin main
-        git push origin "v$NEW_VERSION"
-        
-        # 配置 npm 认证并发布
+
+          echo "Deploying with type: $DEPLOY_TYPE"
+
+          # 根据类型选择版本增量
+          case $DEPLOY_TYPE in
+            major)
+              npm version major --no-git-tag-version
+              ;;
+            minor)
+              npm version minor --no-git-tag-version
+              ;;
+            *)
+              npm version patch --no-git-tag-version
+              ;;
+          esac
+
+          # 获取新版本号
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "New version: $NEW_VERSION"
+
+          # 提交版本更改
+          git add package.json yarn.lock
+          git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
+
+          # 创建 git tag
+          git tag "v$NEW_VERSION"
+
+          # 配置远程 URL 并推送更改和标签
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git push origin main
+          git push origin "v$NEW_VERSION"
+
+                  # 配置 npm 认证并发布
         echo "Configuring npm authentication..."
-        echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > ~/.npmrc
+        npm config set registry https://registry.npmjs.org/
+        npm config set //registry.npmjs.org/:_authToken $NODE_AUTH_TOKEN
         
         # 验证认证配置
         echo "npm whoami result:"
@@ -114,21 +115,21 @@ jobs:
         echo "Publishing to npm..."
         npm publish
 
-    - name: Get version for release
-      id: get-version
-      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Get version for release
+        id: get-version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ steps.get-version.outputs.version }}
-        release_name: Release v${{ steps.get-version.outputs.version }}
-        body: |
-          Auto-deployed from commit: ${{ github.event.head_commit.message }}
-          
-          Changes:
-          ${{ github.event.head_commit.message }}
-        draft: false
-        prerelease: false
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get-version.outputs.version }}
+          release_name: Release v${{ steps.get-version.outputs.version }}
+          body: |
+            Auto-deployed from commit: ${{ github.event.head_commit.message }}
+
+            Changes:
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
