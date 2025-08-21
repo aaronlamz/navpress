@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 
-const { Command } = require('commander');
-const path = require('path');
-const { createServer, build } = require('vite');
-const { prerender } = require('../src/node/prerender.cjs');
+import { Command } from 'commander';
+import path from 'path';
+import { createServer, build } from 'vite';
+import { prerender } from '../src/node/prerender.cjs';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 const packageJson = require(path.join(__dirname, '../package.json'));
 
 const program = new Command();
@@ -32,11 +38,16 @@ program
       configFile: false,
       server: {
         open: true,
+        port: 5173,
+        strictPort: false, // 允许使用其他端口
       },
     });
 
     await server.listen();
-    console.log('Development server started.');
+    const serverUrl = `http://localhost:${server.config.server.port || 5173}`;
+    console.log(`\n  Development server running at: ${serverUrl}`);
+    console.log(`  Local:   ${serverUrl}`);
+    console.log(`  Network: use --host to expose\n`);
   });
 
 program

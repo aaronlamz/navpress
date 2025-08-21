@@ -34,6 +34,10 @@ export default defineConfig(async () => {
 
   return {
     base: basePath,
+
+    optimizeDeps: {
+      include: ['vue', 'vue-router']
+    },
     plugins: [
       vue(),
       {
@@ -121,7 +125,9 @@ export default defineConfig(async () => {
     build: {
       outDir: outputDir,
       rollupOptions: {
-        input: indexHtmlPath,
+        input: {
+          main: indexHtmlPath
+        }
       },
     },
     server: {
