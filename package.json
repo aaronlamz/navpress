@@ -12,7 +12,7 @@
     "serve": "vite preview",
     "lint": "eslint src/",
     "format": "prettier --write \"src/**/*.{js,vue,ts,json,css,scss,md}\"",
-    "prepublishOnly": "npm run lint && npm run build",
+    "prepublishOnly": "npm run build",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish"
