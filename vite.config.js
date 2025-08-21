@@ -70,6 +70,18 @@ export default defineConfig(async () => {
             process.env.CONFIG_PATH ||
             path.resolve(process.cwd(), 'navpress.config.js')
 
+          // 在开发模式下，如果有 base 路径，添加重定向中间件（必须在最前面）
+          if (userConfig.base && userConfig.base !== '/') {
+            server.middlewares.use((req, res, next) => {
+              if (req.url === '/' || req.url === '') {
+                res.writeHead(302, { Location: userConfig.base })
+                res.end()
+                return
+              }
+              next()
+            })
+          }
+
           // 提供一个开发端点，返回当前最新配置，便于刷新后也能获取到最新配置
           server.middlewares.use('/__navpress_config', async (req, res) => {
             try {
@@ -81,17 +93,19 @@ export default defineConfig(async () => {
             }
           })
 
-          // 在开发模式下，如果有 base 路径，添加重定向中间件
-          if (userConfig.base && userConfig.base !== '/') {
-            server.middlewares.use('/', (req, res, next) => {
-              if (req.url === '/' || req.url === '') {
-                res.writeHead(302, { Location: userConfig.base })
-                res.end()
-                return
-              }
-              next()
-            })
-          }
+          // SPA fallback 中间件 - 对于所有路由返回 index.html
+          server.middlewares.use((req, res, next) => {
+            // 跳过 API 端点和静态资源
+            if (req.url.startsWith('/__navpress_config') || 
+                req.url.startsWith('/@') || 
+                req.url.includes('.')) {
+              return next()
+            }
+            
+            // 对于所有其他路径，返回 index.html
+            req.url = '/index.html'
+            next()
+          })
 
           // 监听配置文件变化
           server.watcher.add(configPath)
