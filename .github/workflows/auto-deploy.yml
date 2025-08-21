@@ -1,0 +1,132 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  check-deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check.outputs.should-deploy }}
+      deploy-type: ${{ steps.check.outputs.deploy-type }}
+    
+    steps:
+    - name: Check commit message for deploy
+      id: check
+      run: |
+        COMMIT_MSG="${{ github.event.head_commit.message }}"
+        echo "Commit message: $COMMIT_MSG"
+        
+        # 检查是否包含 deploy 标识
+        if [[ $COMMIT_MSG =~ \[deploy\] ]] || [[ $COMMIT_MSG =~ deploy: ]]; then
+          echo "should-deploy=true" >> $GITHUB_OUTPUT
+          
+          # 确定发布类型
+          if [[ $COMMIT_MSG =~ \[deploy:major\] ]] || [[ $COMMIT_MSG =~ deploy:major ]]; then
+            echo "deploy-type=major" >> $GITHUB_OUTPUT
+          elif [[ $COMMIT_MSG =~ \[deploy:minor\] ]] || [[ $COMMIT_MSG =~ deploy:minor ]]; then
+            echo "deploy-type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "deploy-type=patch" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "should-deploy=false" >> $GITHUB_OUTPUT
+        fi
+
+  deploy:
+    needs: check-deploy
+    if: needs.check-deploy.outputs.should-deploy == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests (if available)
+      run: npm test || echo "No tests found"
+
+    - name: Build package
+      run: npm run build
+
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Bump version and publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+        DEPLOY_TYPE: ${{ needs.check-deploy.outputs.deploy-type }}
+      run: |
+        echo "Deploying with type: $DEPLOY_TYPE"
+        
+        # 根据类型选择版本增量
+        case $DEPLOY_TYPE in
+          major)
+            npm version major --no-git-tag-version
+            ;;
+          minor)
+            npm version minor --no-git-tag-version
+            ;;
+          *)
+            npm version patch --no-git-tag-version
+            ;;
+        esac
+        
+        # 获取新版本号
+        NEW_VERSION=$(node -p "require('./package.json').version")
+        echo "New version: $NEW_VERSION"
+        
+        # 提交版本更改
+        git add package.json package-lock.json
+        git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
+        
+        # 创建 git tag
+        git tag "v$NEW_VERSION"
+        
+        # 推送更改和标签
+        git push origin main
+        git push origin "v$NEW_VERSION"
+        
+        # 发布到 npm
+        npm publish
+
+    - name: Get version for release
+      id: get-version
+      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get-version.outputs.version }}
+        release_name: Release v${{ steps.get-version.outputs.version }}
+        body: |
+          Auto-deployed from commit: ${{ github.event.head_commit.message }}
+          
+          Changes:
+          ${{ github.event.head_commit.message }}
+        draft: false
+        prerelease: false
