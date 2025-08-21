@@ -55,7 +55,6 @@ program
 
     await server.listen()
     const port = server.config.server.port || 5173
-    const basePath = viteConfig.base || '/'
     const serverUrl = `http://localhost:${port}`
     const fullUrl = basePath === '/' ? serverUrl : `${serverUrl}${basePath}`
 
