@@ -125,7 +125,7 @@ jobs:
             echo "Package navpress@$NEW_VERSION already exists in registry, skipping publish"
           else
             echo "Package does not exist, publishing..."
-            npm publish --access public
+            npm publish --access public --force
           fi
 
       - name: Get version for release
