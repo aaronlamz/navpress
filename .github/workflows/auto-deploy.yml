@@ -120,11 +120,13 @@ jobs:
 
           # 发布到 npm
           echo "Publishing to npm..."
-          echo "Checking if package exists in registry..."
-          if npm view navpress@$NEW_VERSION >/dev/null 2>&1; then
-            echo "Package navpress@$NEW_VERSION already exists in registry, skipping publish"
+          echo "Attempting to publish version $NEW_VERSION..."
+
+          # 尝试发布，如果失败则使用force
+          if npm publish --access public; then
+            echo "Successfully published navpress@$NEW_VERSION"
           else
-            echo "Package does not exist, publishing..."
+            echo "Regular publish failed, trying with --force..."
             npm publish --access public --force
           fi
 
