@@ -122,7 +122,16 @@ jobs:
         git push origin main
         git push origin "v$NEW_VERSION"
         
-        # 发布到 npm
+        # 配置 npm 认证并发布
+        echo "Configuring npm authentication..."
+        echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > ~/.npmrc
+        
+        # 验证认证配置
+        echo "npm whoami result:"
+        npm whoami || echo "npm whoami failed, but continuing with publish"
+        
+        # 发布包
+        echo "Publishing to npm..."
         npm publish
 
     - name: Get version for release
