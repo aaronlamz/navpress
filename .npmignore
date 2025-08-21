@@ -1,0 +1,38 @@
+# Development files
+.github/
+.vscode/
+node_modules/
+*.log
+*.lock
+
+# Development config
+.eslintrc*
+.prettierrc*
+.husky/
+.env*
+
+# Test files
+test/
+tests/
+__tests__/
+*.test.*
+*.spec.*
+
+# Documentation
+docs/
+demo.png
+
+# Build artifacts (keep dist for CLI usage)
+.vite/
+coverage/
+
+# Source maps
+*.map
+
+# Development scripts
+scripts/test-*
+test-*.html
+
+# Git
+.git
+.gitignore
