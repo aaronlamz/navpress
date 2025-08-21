@@ -148,6 +148,13 @@ jobs:
             npm publish --access public --force
           fi
 
+          # 如果还是失败，尝试重新发布整个包
+          if [ $? -ne 0 ]; then
+            echo "Force publish also failed, attempting to republish entire package..."
+            echo "This will create a fresh package entry in npm registry"
+            npm publish --access public --force --registry https://registry.npmjs.org/
+          fi
+
       - name: Get version for release
         id: get-version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
