@@ -3,12 +3,32 @@ import App from './App.vue'
 import { createRouterInstance } from './router'
 import './assets/style/index.css'
 
-// 获取全局配置
-const initialConfig =
-  typeof __USER_CONFIG__ !== 'undefined' ? __USER_CONFIG__ : {}
-const userConfig = reactive(initialConfig) // 使用 reactive 创建响应式的配置对象
+// 响应式配置对象（启动时在客户端拉取最新配置，避免刷新后回退旧值）
+const userConfig = reactive({})
 
-console.log('Initial userConfig:', userConfig)
+async function loadLatestConfig() {
+  // 开发环境：动态 import 根目录下的 navpress.config.js，避免使用构建期常量
+  if (typeof window !== 'undefined' && import.meta.env.DEV) {
+    try {
+      const resp = await fetch('/__navpress_config?t=' + Date.now())
+      if (resp.ok) {
+        return await resp.json()
+      }
+    } catch (e) {}
+    try {
+      const mod = await import(
+        /* @vite-ignore */ '/navpress.config.js?t=' + Date.now()
+      )
+      return mod.default || {}
+    } catch (e) {
+      return {}
+    }
+  }
+  // 生产或 SSR 回退到构建期注入的配置
+  return typeof __USER_CONFIG__ !== 'undefined' ? __USER_CONFIG__ : {}
+}
+
+// console debug removed for production-like cleanliness
 
 export function createApp() {
   const app = createSSRApp(App)
@@ -16,6 +36,8 @@ export function createApp() {
   app.use(router)
   // 将配置挂载到全局
   app.config.globalProperties.$config = userConfig
+  // 提供配置给组件使用 inject
+  app.provide('$config', userConfig)
   return { app, router }
 }
 
@@ -23,12 +45,23 @@ if (typeof window !== 'undefined') {
   let app
   let router
 
-  const initializeApp = () => {
+  const initializeApp = async () => {
+    // 首次或刷新时拉取最新配置，避免回退
+    if (!Object.keys(userConfig).length) {
+      const latest = await loadLatestConfig()
+      Object.assign(userConfig, latest)
+    }
+
+    // 清理之前的应用实例
+    if (app) {
+      app.unmount()
+    }
+
     app = createCSRApp(App)
     router = createRouterInstance(userConfig)
     app.use(router)
-    // 将配置挂载到全局
     app.config.globalProperties.$config = userConfig
+    app.provide('$config', userConfig)
     app.mount('#app')
   }
 
@@ -36,11 +69,35 @@ if (typeof window !== 'undefined') {
 
   // 监听 Vite 的自定义事件更新配置
   if (import.meta.hot) {
+    // 监听配置更新事件
     import.meta.hot.on('config-updated', (newConfig) => {
-      Object.assign(userConfig, newConfig) // 更新响应式对象
-      console.log('Config updated:', userConfig)
-      app.unmount()
-      initializeApp()
+      // console debug removed
+
+      try {
+        // 更新响应式配置对象
+        Object.keys(userConfig).forEach((key) => {
+          delete userConfig[key]
+        })
+        Object.assign(userConfig, newConfig)
+
+        // console debug removed
+
+        // 重新初始化应用
+        initializeApp()
+      } catch (error) {
+        // console error removed
+        // 如果更新失败，重新加载页面
+        window.location.reload()
+      }
+    })
+
+    // 不再强制整页 reload，改为仅依赖 config-updated 做增量更新
+
+    // 监听 Vite 热更新错误
+    import.meta.hot.on('error', (error) => {
+      // console error removed
+      // 热更新出错时重新加载页面
+      window.location.reload()
     })
   }
 }

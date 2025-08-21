@@ -3,14 +3,19 @@
 [![npm version](https://img.shields.io/npm/v/navpress.svg)](https://www.npmjs.com/package/navpress)
 [![Deploy to GitHub Pages](https://github.com/aaronlamz/navpress/actions/workflows/deploy.yml/badge.svg)](https://github.com/aaronlamz/navpress/actions/workflows/deploy.yml)
 
+> [简体中文](./README_zh.md) | English
+
 **NavPress** is a CLI tool for generating static navigation websites. It allows you to quickly build a navigation site through a configuration file, supporting both development and production modes.
 
 ## Features
 
-- Simple Configuration: Define your navigation and sidebar through a single configuration file.
-- Supports both development and production builds.
-- Built-in SSR support, automatically generating static HTML files.
-- Integrates with Tailwind CSS and Vue.js.
+- 🎯 **Simple Configuration**: Define your navigation and sidebar through a single configuration file
+- ⚡ **Hot Reload**: Configuration changes apply instantly during development
+- 🏗️ **Production Ready**: Built-in SSR support, automatically generates static HTML files
+- 🎨 **Modern Stack**: Built with Vue.js and Tailwind CSS
+- 📱 **Responsive Design**: Perfect for desktop and mobile devices
+- 🔗 **Flexible Routing**: Support multiple URL formats (query, path, hash)
+- 🖼️ **Built-in Icons**: Default icons included, custom icons supported
 
 ## Preview
 
@@ -18,13 +23,13 @@
 
 ## Installation
 
-You can install `navpress` globally via npm:
+### Global Installation
 
 ```bash
 npm install -g navpress@latest
 ```
 
-Or install it locally in your project:
+### Local Installation
 
 ```bash
 npm install navpress@latest --save-dev
@@ -32,84 +37,37 @@ npm install navpress@latest --save-dev
 
 ## Quick Start
 
-### Fork repository and deploy to gihub pages
+### 1. Create Configuration File
 
-1. Fork this repository by clicking the "Fork" button at the top right corner of this page.
-2. Go to your forked repository's settings on GitHub.Scroll down to the "GitHub Pages" section.
-3. Under "Source", select the `gh-pages` branch from the dropdown menu.
-4. Click "Save".
-
-After a few minutes, your site should be available at `https://<your-github-username>.github.io/navpress/`.
-
-## Customize Development
-
-### 1. Create a Configuration File
-
-Create a `navpress.config.js` file in the root directory of your project and define your navigation and sidebar:
+Create `navpress.config.js` in your project root:
 
 ```javascript
 export default {
-  title: 'My Static Site Generator',
-  description: 'A simple static site generator with configurable navigation',
-  logo: '/navpress/images/logo.svg',
-  github: 'https://github.com/aaronlamz/navpress',
-  base: '/navpress/',
-  meta: {
-    title: 'My Custom Title',
-    description: 'This is a description for SEO.',
-    keywords: 'static site, generator, SEO',
-    author: 'Author Name',
-  },
+  title: 'My Navigation',
+  description: 'Personal website navigation',
+  logo: '/images/logo.svg',
+  base: '/',
+
   sidebar: [
     {
-      text: 'Home',
-      link: '/',
+      text: 'Development Tools',
+      link: '/tools',
       items: [
         {
-          text: 'Group 1',
-          link: '#group1',
+          text: 'Frontend Frameworks',
+          link: '#frameworks',
           items: [
-            { text: 'Child 1', link: 'https://example.com/child1' },
-            { text: 'Child 2', link: 'https://example.com/child2' },
-            { text: 'Child 2', link: 'https://example.com/child2' },
+            {
+              text: 'Vue.js',
+              link: 'https://vuejs.org',
+              description: 'Progressive JavaScript Framework',
+            },
+            {
+              text: 'React',
+              link: 'https://reactjs.org',
+              description: 'JavaScript library for building user interfaces',
+            },
           ],
-        },
-        {
-          text: 'Group 2',
-          link: '#group2',
-          items: [
-            { text: 'Child 3', link: 'https://example.com/child3' },
-            { text: 'Child 4', link: 'https://example.com/child4' },
-            { text: 'Child 2', link: 'https://example.com/child2' },
-          ],
-        },
-        {
-          text: 'Group 3',
-          link: '#group3',
-          items: [
-            { text: 'Child 3', link: 'https://example.com/child3' },
-            { text: 'Child 4', link: 'https://example.com/child4' },
-          ],
-        },
-        {
-          text: 'Group 4',
-          link: '#group4',
-          items: [
-            { text: 'Child 3', link: 'https://example.com/child3' },
-            { text: 'Child 4', link: 'https://example.com/child4' },
-          ],
-        },
-      ],
-    },
-    {
-      text: 'About',
-      link: '/about',
-      expanded: false,
-      items: [
-        {
-          text: 'Group A',
-          link: '#groupA',
-          items: [{ text: 'Child A1', link: 'https://example.com/childA1' }],
         },
       ],
     },
@@ -117,38 +75,147 @@ export default {
 }
 ```
 
-### 2. Start the Development Server
-
-Start the development server with the following command:
+### 2. Start Development Server
 
 ```bash
+# If installed globally
 navpress dev
+
+# If installed locally
+npx navpress dev
 ```
 
-The development server will automatically open in your browser and display the navigation page.
-
-### 3. Build the Static Website
-
-Build the static website with the following command:
+### 3. Build for Production
 
 ```bash
+# Build static files
 navpress build
+
+# Built files will be in dist directory
 ```
 
-The built static files will be output to the `dist` directory. You can deploy the `dist` directory to any static web hosting service.
+## Configuration
 
-## Configuration Options
+### Basic Configuration
 
-### navpress.config.js
+| Field         | Type   | Description                         |
+| ------------- | ------ | ----------------------------------- |
+| `title`       | string | Website title                       |
+| `description` | string | Website description                 |
+| `logo`        | string | Logo image path                     |
+| `base`        | string | Base deployment path, default '/'   |
+| `urlFormat`   | string | URL format: 'query', 'path', 'hash' |
 
-- `title`: The website title.
-- `description`: The website description.
-- `sidebar`: The configuration for the sidebar, an array that can nest multiple groups.
+### Sidebar Configuration
 
-## Contribution
+```javascript
+sidebar: [
+  {
+    text: 'Category Name',
+    link: '/category', // Category page path
+    icon: '/icon.svg', // Optional: custom icon
+    items: [
+      {
+        text: 'Sub Group',
+        link: '#section', // Anchor link
+        items: [
+          {
+            text: 'Website Name',
+            link: 'https://example.com',
+            icon: '/site-icon.svg', // Optional
+            description: 'Website description', // Optional
+          },
+        ],
+      },
+    ],
+  },
+]
+```
 
-We welcome contributions of any kind! If you find bugs or have new ideas, please submit an [Issue](https://github.com/aaronlamz/navpress/issues) or open a [Pull Request](https://github.com/aaronlamz/navpress/pulls).
+### URL Format Options
+
+- **query** (Recommended): `/tools?section=frameworks` - Uses query parameters
+- **path**: `/tools/frameworks` - Uses path parameters
+- **hash**: `/tools#frameworks` - Uses hash parameters
+
+## Deployment
+
+### GitHub Pages
+
+1. Fork this repository
+2. Enable GitHub Pages in repository settings
+3. Select `gh-pages` branch as source
+4. Modify `navpress.config.js` with your configuration
+
+### Other Static Hosting
+
+```bash
+# Build
+navpress build
+
+# Deploy dist directory to any static hosting service
+# Like Netlify, Vercel, GitHub Pages, etc.
+```
+
+## Development
+
+### Hot Reload
+
+Development mode supports configuration hot reload:
+
+- Modify `navpress.config.js` and changes apply automatically
+- No need to manually refresh the page
+- Real-time preview of configuration changes
+
+### Custom Styling
+
+This project uses Tailwind CSS. You can:
+
+1. Modify existing component styles
+2. Add custom CSS classes
+3. Override default theme configuration
+
+## FAQ
+
+### How to add custom icons?
+
+Set the `icon` field in configuration:
+
+```javascript
+{
+  text: 'Website Name',
+  link: 'https://example.com',
+  icon: '/path/to/icon.svg'  // or https://example.com/icon.png
+}
+```
+
+### How to change deployment path?
+
+Set the `base` field:
+
+```javascript
+export default {
+  base: '/my-nav/', // Deploy to yoursite.com/my-nav/
+  // ...other config
+}
+```
+
+### How to support multiple languages?
+
+Create multiple configuration files and use different build commands:
+
+```bash
+# English version
+navpress build --config navpress.en.js
+
+# Chinese version
+navpress build --config navpress.zh.js
+```
+
+## Contributing
+
+Issues and Pull Requests are welcome!
 
 ## License
 
-[MIT](https://github.com/aaronlamz/navpress/blob/main/LICENSE)
+MIT License

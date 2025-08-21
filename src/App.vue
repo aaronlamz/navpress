@@ -10,6 +10,7 @@
         class="sidebar-container bg-gray-100 dark:bg-gray-800"
         @close-sidebar="toggleSidebar"
         :toggleSidebar="toggleSidebar"
+        :urlFormat="$config.urlFormat || 'query'"
       />
       <div
         class="content-container flex-1 overflow-y-auto p-6 dark:bg-gray-900"
@@ -19,6 +20,9 @@
         <FooterComponent />
       </div>
     </div>
+    
+    <!-- 开发模式下显示配置状态 -->
+    <ConfigStatus v-if="isDevelopment" />
   </div>
 </template>
 
@@ -26,16 +30,23 @@
 import Navbar from './components/Navbar.vue'
 import Sidebar from './components/Sidebar.vue'
 import FooterComponent from './components/FooterComponent.vue'
-import { ref } from 'vue'
+import ConfigStatus from './components/ConfigStatus.vue'
+import { ref, computed } from 'vue'
 
 export default {
   components: {
     Navbar,
     Sidebar,
     FooterComponent,
+    ConfigStatus,
   },
   setup() {
     const isSidebarOpen = ref(false)
+    
+    // 判断是否为开发模式
+    const isDevelopment = computed(() => {
+      return import.meta.env.DEV || import.meta.env.MODE === 'development'
+    })
 
     const toggleSidebar = () => {
       isSidebarOpen.value = !isSidebarOpen.value
@@ -47,7 +58,12 @@ export default {
       }
     }
 
-    return { isSidebarOpen, toggleSidebar, closeSidebarOnContentClick }
+    return { 
+      isSidebarOpen, 
+      toggleSidebar, 
+      closeSidebarOnContentClick,
+      isDevelopment
+    }
   },
 }
 </script>
