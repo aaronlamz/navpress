@@ -1,6 +1,6 @@
 {
   "name": "navpress",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Easy navigation website generator",
   "main": "index.js",
   "type": "module",
