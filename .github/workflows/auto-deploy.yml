@@ -70,15 +70,29 @@ jobs:
 
       - name: Bump version and publish
         run: |
-          # 首先获取npm远程的最新版本
-          echo "Checking npm remote version..."
-          REMOTE_VERSION=$(npm view navpress version 2>/dev/null || echo "0.0.0")
-          echo "Remote npm version: $REMOTE_VERSION"
-
+          # 首先获取npm远程的详细信息
+          echo "=== Checking npm remote package info ==="
+          echo "Package name: navpress"
+          
+          # 检查包是否存在
+          if npm view navpress >/dev/null 2>&1; then
+            echo "Package 'navpress' exists in registry"
+            REMOTE_VERSION=$(npm view navpress version 2>/dev/null || echo "0.0.0")
+            echo "Remote npm version: $REMOTE_VERSION"
+            
+            # 获取包的详细信息
+            echo "Package details:"
+            npm view navpress --json | head -20
+          else
+            echo "Package 'navpress' does not exist in registry"
+            echo "This might be a new package or there's a registry issue"
+            REMOTE_VERSION="0.0.0"
+          fi
+          
           # 获取本地当前版本
           LOCAL_VERSION=$(node -p "require('./package.json').version")
           echo "Local package.json version: $LOCAL_VERSION"
-
+          
           # 如果本地版本低于远程版本，先同步到远程版本
           if [ "$(printf '%s\n' "$REMOTE_VERSION" "$LOCAL_VERSION" | sort -V | head -n1)" != "$REMOTE_VERSION" ]; then
             echo "Local version $LOCAL_VERSION is lower than remote version $REMOTE_VERSION"
