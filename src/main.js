@@ -98,7 +98,7 @@ if (typeof window !== 'undefined') {
     // 不再强制整页 reload，改为仅依赖 config-updated 做增量更新
 
     // 监听 Vite 热更新错误
-    import.meta.hot.on('error', (error) => {
+    import.meta.hot.on('error', (_error) => {
       // console error removed
       // 热更新出错时重新加载页面
       window.location.reload()
