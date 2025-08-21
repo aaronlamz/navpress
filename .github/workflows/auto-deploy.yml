@@ -4,6 +4,11 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
+  actions: write
+  pull-requests: write
+
 jobs:
   check-deploy:
     runs-on: ubuntu-latest
@@ -45,6 +50,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
+        persist-credentials: true
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -108,7 +114,8 @@ jobs:
         # 创建 git tag
         git tag "v$NEW_VERSION"
         
-        # 推送更改和标签
+        # 配置远程 URL 并推送更改和标签
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         git push origin main
         git push origin "v$NEW_VERSION"
         
