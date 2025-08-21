@@ -74,6 +74,9 @@ jobs:
 
     - name: Run tests (if available)
       run: yarn test || echo "No tests found"
+      
+    - name: Run linter (optional)
+      run: yarn lint || echo "Linting issues found, but continuing deployment"
 
     - name: Build package
       run: yarn build
