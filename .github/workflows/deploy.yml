@@ -47,10 +47,22 @@ jobs:
           echo "=== Images directory contents ==="
           ls -la ./dist/images || echo "Images directory not found"
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ github.workspace }}/dist
+      - name: Deploy to gh-pages
+        run: |
+          echo "=== 开始手动部署到gh-pages分支 ==="
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          echo "=== 检查dist目录内容 ==="
+          ls -la dist/
+          ls -la dist/assets/
+          ls -la dist/images/
+
+          echo "=== 推送到gh-pages分支 ==="
+          git add dist/ -f
+          git commit -m "Deploy to gh-pages: $(date)"
+          git push origin gh-pages
+
+          echo "=== 部署完成 ==="
         #   destination_dir: navpress  # 部署到 navpress 子目录，不指定就是根目录
         #   cname: aaronlamz.github.io  # 可选: 如果你需要自定义域名
