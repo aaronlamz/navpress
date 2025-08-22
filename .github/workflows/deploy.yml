@@ -22,12 +22,21 @@ jobs:
       - name: Build project
         run: |
           echo "=== Starting build process ==="
+          echo "=== Current directory: $(pwd) ==="
+          echo "=== Directory contents before build: ==="
+          ls -la
+          echo "=== Running yarn build ==="
           yarn build
+          echo "=== Build exit code: $? ==="
           echo "=== Build process completed ==="
           echo "=== Checking build output ==="
           ls -la
           echo "=== Checking dist directory ==="
           ls -la dist/ || echo "dist directory not found!"
+          echo "=== Checking if dist exists: ==="
+          test -d dist && echo "dist directory exists" || echo "dist directory does not exist"
+          echo "=== Checking dist contents recursively: ==="
+          find . -name "dist" -type d 2>/dev/null || echo "No dist directories found"
 
       - name: List build output
         run: |
@@ -42,6 +51,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: dist
+          publish_dir: ${{ github.workspace }}/dist
         #   destination_dir: navpress  # 部署到 navpress 子目录，不指定就是根目录
         #   cname: aaronlamz.github.io  # 可选: 如果你需要自定义域名
