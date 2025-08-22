@@ -69,6 +69,10 @@ jobs:
           echo "=== 清理gh-pages分支内容 ==="
           git rm -rf . || true
 
+          echo "=== 重新构建项目 ==="
+          yarn install
+          yarn build
+
           echo "=== 复制新的构建文件 ==="
           cp -r dist/* .
 
