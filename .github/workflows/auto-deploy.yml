@@ -3,6 +3,11 @@ name: Auto Deploy to NPM
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/deploy.yml'
+      - 'navpress.config.js'
+      - 'README*'
 
 permissions:
   contents: write
@@ -72,7 +77,20 @@ jobs:
           npm ping
           npm view navpress version || echo "Package not found yet"
 
+      - name: Check if should deploy
+        id: should-deploy
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if [[ $COMMIT_MSG =~ \[deploy\] ]] || [[ $COMMIT_MSG =~ \[publish\] ]] || [[ $COMMIT_MSG =~ deploy: ]]; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+            echo "✅ Deploy triggered by commit message: $COMMIT_MSG"
+          else
+            echo "deploy=false" >> $GITHUB_OUTPUT
+            echo "⏭️ Skipping deployment - no deploy identifier found in: $COMMIT_MSG"
+          fi
+
       - name: Bump version and publish
+        if: steps.should-deploy.outputs.deploy == 'true'
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           echo "Detected package name: $PACKAGE_NAME"
