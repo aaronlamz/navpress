@@ -58,28 +58,17 @@ jobs:
           ls -la dist/assets/
           ls -la dist/images/
 
-          echo "=== 推送到gh-pages分支 ==="
+          echo "=== 强制推送到gh-pages分支 ==="
+          git checkout --orphan gh-pages-temp
           git add dist/ -f
-          git commit -m "Deploy to gh-pages: $(date)"
-
-          echo "=== 切换到gh-pages分支并推送 ==="
-          git fetch origin gh-pages
-          git checkout -b gh-pages origin/gh-pages || git checkout gh-pages
-
-          echo "=== 清理gh-pages分支内容 ==="
-          git rm -rf . || true
-
-          echo "=== 重新构建项目 ==="
-          yarn install
-          yarn build
-
-          echo "=== 复制新的构建文件 ==="
-          cp -r dist/* .
-
-          echo "=== 提交并推送 ==="
-          git add .
           git commit -m "Deploy to gh-pages: $(date) - Full rebuild"
-          git push origin gh-pages
+          
+          echo "=== 强制推送并清理 ==="
+          git push origin gh-pages-temp:gh-pages --force
+          git checkout main
+          git branch -D gh-pages-temp
+          
+          echo "=== 部署完成 ==="
 
           echo "=== 部署完成 ==="
         #   destination_dir: navpress  # 部署到 navpress 子目录，不指定就是根目录
