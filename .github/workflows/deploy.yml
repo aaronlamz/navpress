@@ -61,6 +61,11 @@ jobs:
           echo "=== 推送到gh-pages分支 ==="
           git add dist/ -f
           git commit -m "Deploy to gh-pages: $(date)"
+
+          echo "=== 切换到gh-pages分支并推送 ==="
+          git fetch origin gh-pages
+          git checkout -b gh-pages origin/gh-pages || git checkout gh-pages
+          git merge main --allow-unrelated-histories -m "Merge main into gh-pages"
           git push origin gh-pages
 
           echo "=== 部署完成 ==="
