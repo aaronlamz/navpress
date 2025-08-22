@@ -65,7 +65,16 @@ jobs:
           echo "=== 切换到gh-pages分支并推送 ==="
           git fetch origin gh-pages
           git checkout -b gh-pages origin/gh-pages || git checkout gh-pages
-          git merge main --allow-unrelated-histories -m "Merge main into gh-pages"
+
+          echo "=== 清理gh-pages分支内容 ==="
+          git rm -rf . || true
+
+          echo "=== 复制新的构建文件 ==="
+          cp -r dist/* .
+
+          echo "=== 提交并推送 ==="
+          git add .
+          git commit -m "Deploy to gh-pages: $(date) - Full rebuild"
           git push origin gh-pages
 
           echo "=== 部署完成 ==="
