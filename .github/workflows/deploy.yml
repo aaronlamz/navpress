@@ -3,12 +3,12 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # 或者你正在使用的其他主分支
+      - main # 或者你正在使用的其他主分支
     paths:
-      - 'src/**'  # 仅当 src 目录下的文件发生更改时触发构建
+      - 'src/**' # 仅当 src 目录下的文件发生更改时触发构建
 
 permissions:
-  contents: write  # 确保 GITHUB_TOKEN 有写权限
+  contents: write # 确保 GITHUB_TOKEN 有写权限
   pages: write
 
 jobs:
@@ -19,10 +19,19 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: yarn install  # 或者 npm install
+        run: yarn install # 或者 npm install
 
       - name: Build project
-        run: yarn build  # 或者 npm run build
+        run: yarn build # 或者 npm run build
+
+      - name: List build output
+        run: |
+          echo "=== Build output directory contents ==="
+          ls -la ./dist
+          echo "=== Assets directory contents ==="
+          ls -la ./dist/assets || echo "Assets directory not found"
+          echo "=== Images directory contents ==="
+          ls -la ./dist/images || echo "Images directory not found"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
