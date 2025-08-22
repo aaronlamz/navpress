@@ -60,14 +60,17 @@ jobs:
 
           echo "=== 强制推送到gh-pages分支 ==="
           git checkout --orphan gh-pages-temp
-          git add dist/ -f
-          git commit -m "Deploy to gh-pages: $(date) - Full rebuild"
-          
+
+          echo "=== 只添加构建输出文件 ==="
+          cp -r dist/* .
+          git add .
+          git commit -m "Deploy to gh-pages: $(date) - Static files only"
+
           echo "=== 强制推送并清理 ==="
           git push origin gh-pages-temp:gh-pages --force
           git checkout main
           git branch -D gh-pages-temp
-          
+
           echo "=== 部署完成 ==="
 
           echo "=== 部署完成 ==="
