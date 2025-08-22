@@ -7,7 +7,12 @@ import './assets/style/index.css'
 const userConfig = reactive({})
 
 async function loadLatestConfig() {
-  // 开发环境：动态 import 根目录下的 navpress.config.js，避免使用构建期常量
+  // 1. 优先尝试从构建期注入的配置
+  if (typeof window !== 'undefined' && window.__USER_CONFIG__) {
+    return window.__USER_CONFIG__
+  }
+
+  // 2. 开发环境：尝试动态加载配置
   if (typeof window !== 'undefined' && import.meta.env.DEV) {
     try {
       const resp = await fetch('/__navpress_config?t=' + Date.now())
@@ -23,13 +28,38 @@ async function loadLatestConfig() {
       )
       return mod.default || {}
     } catch (e) {
-      return {}
+      // 忽略错误，继续尝试其他方法
     }
   }
-  // 生产或 SSR 回退到构建期注入的配置
-  return typeof window !== 'undefined' && window.__USER_CONFIG__
-    ? window.__USER_CONFIG__
-    : {}
+
+  // 3. 静态文件模式：尝试从根目录加载配置
+  if (typeof window !== 'undefined') {
+    try {
+      const resp = await fetch('/navpress.config.js?t=' + Date.now())
+      if (resp.ok) {
+        const text = await resp.text()
+        // 简单的配置解析，提取 export default 部分
+        const match = text.match(/export\s+default\s*({[\s\S]*?});?\s*$/)
+        if (match) {
+          try {
+            return eval('(' + match[1] + ')')
+          } catch (e) {
+            console.warn('配置解析失败:', e)
+          }
+        }
+      }
+    } catch (e) {
+      // 忽略错误，继续尝试其他方法
+    }
+  }
+
+  // 4. 最后回退到默认配置
+  return {
+    title: 'NavPress',
+    description: 'Static Site Generator',
+    sidebar: [],
+    urlFormat: 'query',
+  }
 }
 
 // console debug removed for production-like cleanliness
