@@ -58,132 +58,61 @@ jobs:
 
       - name: Configure npm authentication
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "registry=https://registry.npmjs.org/" > ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
           echo "always-auth=true" >> ~/.npmrc
-          echo "=== npm config list ==="
-          npm config list
-          echo "=== npm whoami ==="
-          npm whoami || echo "npm whoami failed"
-          echo "=== npm view navpress ==="
-          npm view navpress || echo "npm view navpress failed"
 
-      - name: Bump version and publish
+          echo "=== .npmrc content (token masked) ==="
+          cat ~/.npmrc
+
+          echo "=== npm whoami ==="
+          npm whoami || echo "❌ npm whoami failed"
+
+      - name: Bump patch version and publish
         run: |
-          # 首先获取npm远程的详细信息
-          echo "=== Checking npm remote package info ==="
-          echo "Package name: navpress"
-          
-          # 检查包是否存在
-          if npm view navpress >/dev/null 2>&1; then
-            echo "Package 'navpress' exists in registry"
-            REMOTE_VERSION=$(npm view navpress version 2>/dev/null || echo "0.0.0")
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          echo "Detected package name: $PACKAGE_NAME"
+
+          # 获取远程版本
+          if npm view "$PACKAGE_NAME" >/dev/null 2>&1; then
+            REMOTE_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || echo "0.0.0")
             echo "Remote npm version: $REMOTE_VERSION"
-            
-            # 获取包的详细信息
-            echo "Package details:"
-            npm view navpress --json | head -20
           else
-            echo "Package 'navpress' does not exist in registry"
-            echo "This might be a new package or there's a registry issue"
+            echo "Package '$PACKAGE_NAME' does not exist in registry"
             REMOTE_VERSION="0.0.0"
           fi
-          
-          # 获取本地当前版本
+
           LOCAL_VERSION=$(node -p "require('./package.json').version")
-          echo "Local package.json version: $LOCAL_VERSION"
-          
-          # 如果本地版本低于远程版本，先同步到远程版本
+          echo "Local version: $LOCAL_VERSION"
+
+          # 如果本地版本落后，先对齐远程版本
           if [ "$(printf '%s\n' "$REMOTE_VERSION" "$LOCAL_VERSION" | sort -V | head -n1)" != "$REMOTE_VERSION" ]; then
-            echo "Local version $LOCAL_VERSION is lower than remote version $REMOTE_VERSION"
-            echo "Updating local version to match remote..."
+            echo "Syncing local version to $REMOTE_VERSION"
             npm version $REMOTE_VERSION --no-git-tag-version
             LOCAL_VERSION=$REMOTE_VERSION
-            echo "Updated local version to: $LOCAL_VERSION"
           fi
 
-          # 根据提交信息确定版本类型
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          echo "Commit message: $COMMIT_MSG"
-
-          if [[ $COMMIT_MSG =~ ^breaking: ]] || [[ $COMMIT_MSG =~ \[deploy:major\] ]]; then
-            DEPLOY_TYPE="major"
-          elif [[ $COMMIT_MSG =~ ^feat: ]] || [[ $COMMIT_MSG =~ \[deploy:minor\] ]]; then
-            DEPLOY_TYPE="minor"
-          else
-            DEPLOY_TYPE="patch"
-          fi
-
-          echo "Deploying with type: $DEPLOY_TYPE"
-
-          # 根据类型选择版本增量
-          case $DEPLOY_TYPE in
-            major)
-              npm version major --no-git-tag-version
-              ;;
-            minor)
-              npm version minor --no-git-tag-version
-              ;;
-            *)
-              npm version patch --no-git-tag-version
-              ;;
-          esac
-
-          # 获取新版本号
+          # 固定只升 patch
+          npm version patch --no-git-tag-version
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "New version: $NEW_VERSION"
 
-          # 提交版本更改
-          git add package.json yarn.lock
-          git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
+          echo "Publishing $PACKAGE_NAME@$NEW_VERSION to npm..."
+          npm publish --access public
 
-          # 创建 git tag (如果已存在则删除)
+          # 发布成功后，提交 package.json / yarn.lock 以及 tag
+          git add package.json yarn.lock
+          git commit -m "chore: bump version to v$NEW_VERSION [skip ci]" || echo "No changes to commit"
+
           if git tag -l "v$NEW_VERSION" | grep -q "v$NEW_VERSION"; then
-            echo "Tag v$NEW_VERSION already exists, deleting it..."
             git tag -d "v$NEW_VERSION"
-            git push origin --delete "v$NEW_VERSION" || echo "Remote tag deletion failed, continuing..."
+            git push origin --delete "v$NEW_VERSION" || true
           fi
           git tag "v$NEW_VERSION"
 
-          # 配置远程 URL 并推送更改和标签
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin main
           git push origin "v$NEW_VERSION"
-
-          # 发布到 npm
-          echo "Publishing to npm..."
-          echo "Attempting to publish version $NEW_VERSION..."
-
-          # 尝试发布，如果失败则使用force
-          PUBLISH_SUCCESS=false
-          if npm publish --access public; then
-            echo "Successfully published navpress@$NEW_VERSION"
-            PUBLISH_SUCCESS=true
-          else
-            echo "Regular publish failed, trying with --force..."
-            if npm publish --access public --force; then
-              echo "Successfully published navpress@$NEW_VERSION with --force"
-              PUBLISH_SUCCESS=true
-            else
-              echo "Force publish also failed, attempting to republish entire package..."
-              echo "This will create a fresh package entry in npm registry"
-              if npm publish --access public --force --registry https://registry.npmjs.org/; then
-                echo "Successfully republished entire package"
-                PUBLISH_SUCCESS=true
-              else
-                echo "All publish attempts failed"
-              fi
-            fi
-          fi
-
-          # 如果发布失败，回滚版本号
-          if [ "$PUBLISH_SUCCESS" = false ]; then
-            echo "Publishing failed, rolling back version number..."
-            git reset --hard HEAD~1
-            git tag -d "v$NEW_VERSION" || echo "Tag deletion failed"
-            echo "Version rollback completed. Package.json is back to previous version."
-            exit 1
-          fi
 
       - name: Get version for release
         id: get-version
