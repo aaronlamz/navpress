@@ -32,6 +32,27 @@ export default defineConfig(async () => {
   const indexHtmlPath = path.resolve(__dirname, 'index.html')
   const basePath = userConfig.base || '/'
 
+  // 确保配置在define之前被加载
+  console.log('=== 配置加载完成 ===')
+  console.log('userConfig keys:', Object.keys(userConfig))
+  console.log('userConfig.title:', userConfig.title)
+  console.log('========================')
+
+  // 调试配置加载
+  console.log('=== 构建配置调试信息 ===')
+  console.log('userConfig:', JSON.stringify(userConfig, null, 2))
+  console.log('basePath:', basePath)
+  console.log('outputDir:', outputDir)
+  console.log('========================')
+
+  // 确保配置在构建时就被注入
+  const configForBuild = {
+    ...userConfig,
+    // 添加构建时标记
+    _buildTime: Date.now(),
+    _buildMode: 'production',
+  }
+
   return {
     base: basePath,
 
@@ -42,9 +63,10 @@ export default defineConfig(async () => {
       vue(),
       {
         name: 'html-transform',
+        enforce: 'pre',
         transformIndexHtml(html) {
           // 动态替换 title 和 meta 标签内容
-          return html
+          let result = html
             .replace(
               /<title>.*<\/title>/,
               `<title>${userConfig.meta?.title || userConfig.title}</title>`
@@ -61,6 +83,12 @@ export default defineConfig(async () => {
               /<meta name="author" content=".*">/,
               `<meta name="author" content="${userConfig.meta?.author || ''}">`
             )
+
+          // 总是注入配置脚本（开发环境和生产环境）
+          const configScript = `<script>window.__USER_CONFIG__ = ${JSON.stringify(userConfig)};</script>`
+          result = result.replace(/<\/head>/, `${configScript}</head>`)
+
+          return result
         },
       },
       {
@@ -113,6 +141,10 @@ export default defineConfig(async () => {
         },
       },
     ],
+    define: {
+      // 在开发环境和预览模式下都注入配置
+      __USER_CONFIG__: JSON.stringify(userConfig),
+    },
     css: {
       postcss: {
         plugins: [
@@ -123,15 +155,16 @@ export default defineConfig(async () => {
         ],
       },
     },
-    define: {
-      __USER_CONFIG__: JSON.stringify(userConfig),
-    },
     root: path.resolve(__dirname),
     build: {
       outDir: outputDir,
       rollupOptions: {
         input: {
           main: indexHtmlPath,
+        },
+        onwarn(warning, warn) {
+          console.log('Build warning:', warning)
+          warn(warning)
         },
       },
     },

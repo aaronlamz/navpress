@@ -7,8 +7,9 @@ import './assets/style/index.css'
 const userConfig = reactive({})
 
 async function loadLatestConfig() {
-  // 1. 优先尝试从构建期注入的配置
+  // 1. 优先尝试从构建期注入的配置（如果存在）
   if (typeof window !== 'undefined' && window.__USER_CONFIG__) {
+    console.log('使用内联配置:', window.__USER_CONFIG__)
     return window.__USER_CONFIG__
   }
 
