@@ -98,18 +98,7 @@ export default defineConfig(async () => {
             process.env.CONFIG_PATH ||
             path.resolve(process.cwd(), 'navpress.config.js')
 
-          // 手动处理 base 路径重定向，确保开发模式下正确工作
-          if (userConfig.base && userConfig.base !== '/') {
-            server.middlewares.use('/', (req, res, next) => {
-              // 如果访问根路径，重定向到 base 路径
-              if (req.url === '/' || req.url === '') {
-                res.writeHead(302, { Location: userConfig.base })
-                res.end()
-                return
-              }
-              next()
-            })
-          }
+          // Vite 会自动处理 base 路径，不需要手动重定向
 
           // 提供一个开发端点，返回当前最新配置，便于刷新后也能获取到最新配置
           server.middlewares.use('/__navpress_config', async (req, res) => {
@@ -124,6 +113,8 @@ export default defineConfig(async () => {
 
           // SPA fallback 中间件 - Vite 内置了这个功能，但我们需要确保它正确工作
           // 对于开发环境，Vite 会自动处理 SPA fallback
+
+          // Vite 会自动处理 SPA 路由，不需要手动干预
 
           // 监听配置文件变化
           server.watcher.add(configPath)
