@@ -20,6 +20,7 @@
 - 🖼️ **Built-in Icons**: Default icons included, custom icons supported
 - 🚀 **CLI Tool**: Easy-to-use command line interface
 - 📦 **Zero Dependencies**: Lightweight and fast
+- 🔄 **Automated CI/CD**: GitHub Actions for automatic npm publishing and releases
 
 ## Preview
 
@@ -50,7 +51,7 @@ npm install navpress@latest --save-dev
 
 ```bash
 navpress --version
-# Output: navpress@1.0.8
+# Output: navpress@1.1.5
 ```
 
 ## 🚀 Quick Start
