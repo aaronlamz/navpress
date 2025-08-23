@@ -18,7 +18,7 @@
     "release:major": "npm version major && npm publish"
   },
   "bin": {
-    "navpress": "bin/navpress.js"
+    "navpress": "bin/navpress.mjs"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "public/",
     "dist/",
     "*.config.js",
+    "index.html",
     "README.md",
     "README_zh.md"
   ],

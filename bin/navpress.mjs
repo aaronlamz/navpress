@@ -37,8 +37,6 @@ program
   .action(async (cmd) => {
     const configPath = path.resolve(process.cwd(), cmd.config)
     process.env.CONFIG_PATH = configPath
-    // 设置工作目录环境变量，确保 vite.config.js 能找到正确的配置文件
-    process.env.WORKING_DIR = process.cwd()
     const viteConfig = await loadViteConfig()
 
     // 获取 base 路径来决定打开的 URL
@@ -48,16 +46,10 @@ program
     const server = await createServer({
       ...viteConfig,
       configFile: false,
-      base: basePath, // 确保开发服务器使用正确的 base 路径
       server: {
-        ...viteConfig.server, // 保留 Vite 配置中的 server 设置
         open: openUrl,
         port: 5173,
         strictPort: false, // 允许使用其他端口
-        // 确保开发服务器正确处理 base 路径
-        fs: {
-          allow: ['..'],
-        },
       },
     })
 
