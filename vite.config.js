@@ -98,7 +98,18 @@ export default defineConfig(async () => {
             process.env.CONFIG_PATH ||
             path.resolve(process.cwd(), 'navpress.config.js')
 
-          // Vite 会自动处理 base 路径重定向，我们不需要手动添加
+          // 手动处理 base 路径重定向，确保开发模式下正确工作
+          if (userConfig.base && userConfig.base !== '/') {
+            server.middlewares.use('/', (req, res, next) => {
+              // 如果访问根路径，重定向到 base 路径
+              if (req.url === '/' || req.url === '') {
+                res.writeHead(302, { Location: userConfig.base })
+                res.end()
+                return
+              }
+              next()
+            })
+          }
 
           // 提供一个开发端点，返回当前最新配置，便于刷新后也能获取到最新配置
           server.middlewares.use('/__navpress_config', async (req, res) => {
@@ -173,6 +184,10 @@ export default defineConfig(async () => {
       watch: {
         usePolling: true,
         interval: 300,
+      },
+      // 确保开发服务器正确处理 base 路径
+      fs: {
+        allow: ['..'],
       },
     },
   }

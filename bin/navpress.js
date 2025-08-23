@@ -50,6 +50,10 @@ program
         open: openUrl,
         port: 5173,
         strictPort: false, // 允许使用其他端口
+        // 确保开发服务器正确处理 base 路径
+        fs: {
+          allow: ['..'],
+        },
       },
     })
 
