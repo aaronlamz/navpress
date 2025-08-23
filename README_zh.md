@@ -214,7 +214,17 @@ navpress build --config navpress.zh.js
 
 ## 贡献
 
-欢迎提交 Issue 和 Pull Request！
+我们欢迎所有形式的贡献！请阅读我们的[贡献指南](./CONTRIBUTING.md)了解如何提交 Pull Request、报告问题和参与项目开发。
+
+### 快速开始
+
+1. Fork 此仓库
+2. 创建功能分支：`git checkout -b feature/amazing-feature`
+3. 进行你的修改
+4. 运行测试：`yarn test`
+5. 提交更改：`git commit -m 'feat: 添加新功能'`
+6. 推送到分支：`git push origin feature/amazing-feature`
+7. 创建 Pull Request
 
 ## 许可证
 

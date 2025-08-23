@@ -214,9 +214,18 @@ navpress build --config navpress.zh.js
 
 ## Contributing
 
-Issues and Pull Requests are welcome!
+We welcome contributions! Please read our [Contributing Guide](./CONTRIBUTING.md) for details on how to submit pull requests, report issues, and contribute to the project.
+
+### Quick Start for Contributors
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Run tests: `yarn test`
+5. Commit your changes: `git commit -m 'feat: add amazing feature'`
+6. Push to the branch: `git push origin feature/amazing-feature`
+7. Open a Pull Request
 
 ## License
 
 MIT License
-# 触发构建 - 2025年 8月22日 星期五 10时18分46秒 CST
