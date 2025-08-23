@@ -30,8 +30,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
-          always-auth: true
 
       - name: Setup Yarn
         run: npm install -g yarn
@@ -62,20 +60,47 @@ jobs:
           git config --local user.name "GitHub Action"
 
       - name: Configure npm authentication
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          rm -f ~/.npmrc
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          echo "always-auth=true" >> ~/.npmrc
-          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          # Check if NPM_TOKEN is set
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "❌ NPM_TOKEN is not set"
+            exit 1
+          fi
+          echo "✅ NPM_TOKEN is set (length: ${#NPM_TOKEN})"
+
+          # Clear any existing npm config
+          npm config delete _authToken || true
+          npm config delete //registry.npmjs.org/:_authToken || true
+
+          # Set npm token directly
+          npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          npm config set always-auth true
+
+          # Verify the token is set
           echo "=== Debug npm authentication ==="
-          cat ~/.npmrc
+          npm config list
+          echo "Token set: $(npm config get //registry.npmjs.org/:_authToken | cut -c1-10)..."
           npm whoami || echo "❌ npm whoami failed"
 
       - name: Debug npm before publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          echo "=== Current npm configuration ==="
+          npm config list
+          echo "=== Testing npm authentication ==="
           npm whoami
           npm ping
           npm view navpress version || echo "Package not found yet"
+
+          # Verify npm token is working
+          if ! npm whoami > /dev/null 2>&1; then
+            echo "❌ npm authentication failed"
+            exit 1
+          fi
+          echo "✅ npm authentication successful"
 
       - name: Check if should deploy
         id: should-deploy
@@ -91,6 +116,8 @@ jobs:
 
       - name: Bump version and publish
         if: steps.should-deploy.outputs.deploy == 'true'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           echo "Detected package name: $PACKAGE_NAME"
@@ -132,7 +159,17 @@ jobs:
 
           # 发布到 npm
           echo "Publishing navpress@$NEW_VERSION to npm..."
-          if npm publish --access public; then
+
+          # Check if package exists on npm
+          if npm view navpress > /dev/null 2>&1; then
+            echo "Package navpress already exists on npm, publishing new version..."
+            PUBLISH_CMD="npm publish"
+          else
+            echo "Package navpress does not exist on npm, publishing for the first time..."
+            PUBLISH_CMD="npm publish --access public"
+          fi
+
+          if $PUBLISH_CMD; then
             echo "Successfully published navpress@$NEW_VERSION"
           else
             echo "❌ Publish failed, exiting..."
