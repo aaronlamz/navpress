@@ -76,7 +76,6 @@ jobs:
 
           # Set npm token directly
           npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          npm config set always-auth true
 
           # Verify the token is set
           echo "=== Debug npm authentication ==="
