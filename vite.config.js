@@ -10,8 +10,23 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const loadUserConfig = async () => {
-  const configPath =
-    process.env.CONFIG_PATH || path.resolve(process.cwd(), 'navpress.config.js')
+  // 优先使用环境变量中的配置文件路径
+  let configPath = process.env.CONFIG_PATH
+
+  if (!configPath) {
+    // 如果没有设置环境变量，尝试从当前工作目录查找
+    configPath = path.resolve(process.cwd(), 'navpress.config.js')
+
+    // 如果当前工作目录没有配置文件，尝试从 NavPress 包目录查找（作为 fallback）
+    try {
+      await fs.access(configPath)
+    } catch (error) {
+      console.log('当前工作目录没有找到配置文件，使用包内部配置作为演示')
+      configPath = path.resolve(__dirname, 'navpress.config.js')
+    }
+  }
+
+  console.log('📁 配置文件路径:', configPath)
   let userConfig = {}
 
   try {
@@ -168,6 +183,12 @@ export default defineConfig(async () => {
           console.log('Build warning:', warning)
           warn(warning)
         },
+      },
+    },
+    // 确保开发服务器正确处理外部项目的文件
+    server: {
+      fs: {
+        allow: ['..'],
       },
     },
     server: {
