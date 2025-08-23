@@ -37,6 +37,8 @@ program
   .action(async (cmd) => {
     const configPath = path.resolve(process.cwd(), cmd.config)
     process.env.CONFIG_PATH = configPath
+    // 设置工作目录环境变量，确保 vite.config.js 能找到正确的配置文件
+    process.env.WORKING_DIR = process.cwd()
     const viteConfig = await loadViteConfig()
 
     // 获取 base 路径来决定打开的 URL

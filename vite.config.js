@@ -15,14 +15,16 @@ const loadUserConfig = async () => {
 
   if (!configPath) {
     // 如果没有设置环境变量，尝试从当前工作目录查找
-    configPath = path.resolve(process.cwd(), 'navpress.config.js')
+    // 注意：这里需要找到真正的工作目录，而不是包内部的目录
+    const workingDir = process.env.WORKING_DIR || process.cwd()
+    configPath = path.resolve(workingDir, 'navpress.config.js')
 
     // 检查当前工作目录是否有配置文件
     try {
       await fs.access(configPath)
-      console.log('✅ 找到当前工作目录的配置文件:', configPath)
+      console.log('✅ 找到工作目录的配置文件:', configPath)
     } catch (error) {
-      console.log('❌ 当前工作目录没有找到配置文件，使用包内部配置作为演示')
+      console.log('❌ 工作目录没有找到配置文件，使用包内部配置作为演示')
       configPath = path.resolve(__dirname, 'navpress.config.js')
     }
   }
