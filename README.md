@@ -1,41 +1,59 @@
 # NavPress
 
 [![npm version](https://img.shields.io/npm/v/navpress.svg)](https://www.npmjs.com/package/navpress)
-[![Deploy to GitHub Pages](https://github.com/aaronlamz/navpress/actions/workflows/deploy.yml/badge.svg)](https://github.com/aaronlamz/navpress/actions/workflows/deploy.yml)
+[![npm downloads](https://img.shields.io/npm/dm/navpress.svg)](https://www.npmjs.com/package/navpress)
+[![GitHub stars](https://img.shields.io/github/stars/aaronlamz/navpress.svg)](https://github.com/aaronlamz/navpress)
+[![License](https://img.shields.io/npm/l/navpress.svg)](https://github.com/aaronlamz/navpress/blob/main/LICENSE)
 
 > [简体中文](./README_zh.md) | English
 
-**NavPress** is a CLI tool for generating static navigation websites. It allows you to quickly build a navigation site through a configuration file, supporting both development and production modes.
+**NavPress** is a powerful CLI tool for generating beautiful static navigation websites. Build your personal navigation site in minutes with a simple configuration file. Perfect for developers, teams, and anyone who wants to organize their favorite links.
 
-## Features
+## ✨ Features
 
 - 🎯 **Simple Configuration**: Define your navigation and sidebar through a single configuration file
 - ⚡ **Hot Reload**: Configuration changes apply instantly during development
 - 🏗️ **Production Ready**: Built-in SSR support, automatically generates static HTML files
-- 🎨 **Modern Stack**: Built with Vue.js and Tailwind CSS
+- 🎨 **Modern Stack**: Built with Vue.js 3 and Tailwind CSS
 - 📱 **Responsive Design**: Perfect for desktop and mobile devices
 - 🔗 **Flexible Routing**: Support multiple URL formats (query, path, hash)
 - 🖼️ **Built-in Icons**: Default icons included, custom icons supported
+- 🚀 **CLI Tool**: Easy-to-use command line interface
+- 📦 **Zero Dependencies**: Lightweight and fast
 
 ## Preview
 
 [View Demo](https://aaronlamz.github.io/navpress/)
 
-## Installation
+## 🚀 Installation
 
-### Global Installation
+### Quick Install
 
 ```bash
 npm install -g navpress@latest
 ```
 
-### Local Installation
+### Alternative Installation Methods
 
 ```bash
+# Using yarn
+yarn global add navpress@latest
+
+# Using pnpm
+pnpm add -g navpress@latest
+
+# Local development
 npm install navpress@latest --save-dev
 ```
 
-## Quick Start
+### Verify Installation
+
+```bash
+navpress --version
+# Output: navpress@1.0.8
+```
+
+## 🚀 Quick Start
 
 ### 1. Create Configuration File
 
@@ -94,17 +112,17 @@ navpress build
 # Built files will be in dist directory
 ```
 
-## Configuration
+## ⚙️ Configuration
 
 ### Basic Configuration
 
-| Field         | Type   | Description                         |
-| ------------- | ------ | ----------------------------------- |
-| `title`       | string | Website title                       |
-| `description` | string | Website description                 |
-| `logo`        | string | Logo image path                     |
-| `base`        | string | Base deployment path, default '/'   |
-| `urlFormat`   | string | URL format: 'query', 'path', 'hash' |
+| Field         | Type   | Description                         | Default              |
+| ------------- | ------ | ----------------------------------- | -------------------- |
+| `title`       | string | Website title                       | `NavPress`           |
+| `description` | string | Website description                 | `Navigation Website` |
+| `logo`        | string | Logo image path                     | `/images/logo.svg`   |
+| `base`        | string | Base deployment path                | `/`                  |
+| `urlFormat`   | string | URL format: 'query', 'path', 'hash' | `query`              |
 
 ### Sidebar Configuration
 
@@ -138,26 +156,73 @@ sidebar: [
 - **path**: `/tools/frameworks` - Uses path parameters
 - **hash**: `/tools#frameworks` - Uses hash parameters
 
-## Deployment
+## 🚀 Deployment
 
-### GitHub Pages
+### Quick Deploy
+
+```bash
+# Build your site
+navpress build
+
+# Deploy to any static hosting service
+# The built files are in the `dist` directory
+```
+
+### Popular Hosting Options
+
+#### GitHub Pages
 
 1. Fork this repository
 2. Enable GitHub Pages in repository settings
 3. Select `gh-pages` branch as source
 4. Modify `navpress.config.js` with your configuration
 
-### Other Static Hosting
+#### Netlify
 
 ```bash
-# Build
+# Build and deploy
 navpress build
-
-# Deploy dist directory to any static hosting service
-# Like Netlify, Vercel, GitHub Pages, etc.
+# Drag and drop the `dist` folder to Netlify
 ```
 
-## Development
+#### Vercel
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+navpress build
+vercel --prod
+```
+
+#### Any Static Hosting
+
+```bash
+navpress build
+# Upload the `dist` directory to your hosting service
+```
+
+## 🛠️ Development
+
+### Development Commands
+
+```bash
+# Start development server with hot reload
+navpress dev
+
+# Build for production
+navpress build
+
+# Preview production build
+navpress serve
+
+# Run linting
+yarn lint
+
+# Format code
+yarn format
+```
 
 ### Hot Reload
 
@@ -175,7 +240,21 @@ This project uses Tailwind CSS. You can:
 2. Add custom CSS classes
 3. Override default theme configuration
 
-## FAQ
+### Project Structure
+
+```
+navpress/
+├── src/
+│   ├── components/     # Vue components
+│   ├── pages/         # Page components
+│   ├── utils/         # Utility functions
+│   └── assets/        # Static assets
+├── public/            # Public assets
+├── navpress.config.js # Configuration file
+└── package.json       # Dependencies
+```
+
+## ❓ FAQ
 
 ### How to add custom icons?
 
@@ -212,7 +291,31 @@ navpress build --config navpress.en.js
 navpress build --config navpress.zh.js
 ```
 
-## Contributing
+### How to update NavPress?
+
+```bash
+# Update to latest version
+npm update -g navpress@latest
+
+# Or reinstall
+npm install -g navpress@latest
+```
+
+### How to uninstall NavPress?
+
+```bash
+npm uninstall -g navpress
+```
+
+### How to check NavPress version?
+
+```bash
+navpress --version
+# or
+npm list -g navpress
+```
+
+## 🤝 Contributing
 
 We welcome contributions! Please read our [Contributing Guide](./CONTRIBUTING.md) for details on how to submit pull requests, report issues, and contribute to the project.
 
@@ -226,6 +329,35 @@ We welcome contributions! Please read our [Contributing Guide](./CONTRIBUTING.md
 6. Push to the branch: `git push origin feature/amazing-feature`
 7. Open a Pull Request
 
-## License
+### Development Setup
 
-MIT License
+```bash
+# Clone and setup
+git clone https://github.com/aaronlamz/navpress.git
+cd navpress
+yarn install
+
+# Start development
+yarn dev
+```
+
+### Report Issues
+
+Found a bug? Have a feature request? Please [create an issue](https://github.com/aaronlamz/navpress/issues) and we'll get back to you!
+
+## 📄 License
+
+MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🌟 Support
+
+If you find NavPress helpful, please consider:
+
+- ⭐ Starring this repository
+- 📦 Installing from npm: `npm install -g navpress@latest`
+- 🐛 Reporting bugs or suggesting features
+- 🤝 Contributing code or documentation
+
+---
+
+**Made with ❤️ by [aaronlamz](https://github.com/aaronlamz)**
