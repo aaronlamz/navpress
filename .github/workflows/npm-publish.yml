@@ -3,6 +3,9 @@ name: Auto Deploy to NPM
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/deploy-pages.yml'
 
 permissions:
   contents: write
@@ -11,6 +14,7 @@ permissions:
 
 jobs:
   deploy:
+    if: contains(github.event.head_commit.message, 'publish')
     runs-on: ubuntu-latest
 
     steps:

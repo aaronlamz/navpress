@@ -20,7 +20,7 @@
 - 🖼️ **Built-in Icons**: Default icons included, custom icons supported
 - 🚀 **CLI Tool**: Easy-to-use command line interface
 - 📦 **Zero Dependencies**: Lightweight and fast
-- 🔄 **Automated CI/CD**: GitHub Actions for automatic npm publishing and releases
+- 🔄 **Automated CI/CD**: GitHub Actions for automatic npm publishing and GitHub Pages deployment
 
 ## Preview
 
@@ -315,6 +315,36 @@ navpress --version
 # or
 npm list -g navpress
 ```
+
+## 🚀 CI/CD Pipeline
+
+NavPress uses GitHub Actions for automated deployment and publishing:
+
+### Trigger Conditions
+
+- **📦 npm Publishing**: Include `publish` in your commit message
+  ```bash
+  git commit -m "feat: add new feature [publish]"
+  ```
+- **🌐 GitHub Pages**: Include `deploy` in your commit message
+  ```bash
+  git commit -m "docs: update documentation [deploy]"
+  ```
+- **🔄 Regular Commits**: No special identifier needed (won't trigger deployment)
+
+### Workflow Steps
+
+1. **npm Publishing** (`publish` identifier):
+
+   - Bumps version automatically
+   - Publishes to npm registry
+   - Creates GitHub release
+   - Tags the release
+
+2. **GitHub Pages** (`deploy` identifier):
+   - Builds the project
+   - Deploys to GitHub Pages
+   - Updates live demo site
 
 ## 🤝 Contributing
 
