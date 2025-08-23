@@ -17,11 +17,12 @@ const loadUserConfig = async () => {
     // 如果没有设置环境变量，尝试从当前工作目录查找
     configPath = path.resolve(process.cwd(), 'navpress.config.js')
 
-    // 如果当前工作目录没有配置文件，尝试从 NavPress 包目录查找（作为 fallback）
+    // 检查当前工作目录是否有配置文件
     try {
       await fs.access(configPath)
+      console.log('✅ 找到当前工作目录的配置文件:', configPath)
     } catch (error) {
-      console.log('当前工作目录没有找到配置文件，使用包内部配置作为演示')
+      console.log('❌ 当前工作目录没有找到配置文件，使用包内部配置作为演示')
       configPath = path.resolve(__dirname, 'navpress.config.js')
     }
   }
@@ -113,7 +114,18 @@ export default defineConfig(async () => {
             process.env.CONFIG_PATH ||
             path.resolve(process.cwd(), 'navpress.config.js')
 
-          // Vite 会自动处理 base 路径，不需要手动重定向
+          // 处理 base 路径重定向
+          if (userConfig.base && userConfig.base !== '/') {
+            server.middlewares.use((req, res, next) => {
+              // 如果请求的是根路径，重定向到 base 路径
+              if (req.url === '/') {
+                res.writeHead(302, { Location: userConfig.base })
+                res.end()
+                return
+              }
+              next()
+            })
+          }
 
           // 提供一个开发端点，返回当前最新配置，便于刷新后也能获取到最新配置
           server.middlewares.use('/__navpress_config', async (req, res) => {
@@ -185,19 +197,13 @@ export default defineConfig(async () => {
         },
       },
     },
-    // 确保开发服务器正确处理外部项目的文件
-    server: {
-      fs: {
-        allow: ['..'],
-      },
-    },
     server: {
       open: true,
       watch: {
         usePolling: true,
         interval: 300,
       },
-      // 确保开发服务器正确处理 base 路径
+      // 确保开发服务器正确处理 base 路径和外部项目文件
       fs: {
         allow: ['..'],
       },

@@ -46,7 +46,9 @@ program
     const server = await createServer({
       ...viteConfig,
       configFile: false,
+      base: basePath, // 确保开发服务器使用正确的 base 路径
       server: {
+        ...viteConfig.server, // 保留 Vite 配置中的 server 设置
         open: openUrl,
         port: 5173,
         strictPort: false, // 允许使用其他端口

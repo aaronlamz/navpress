@@ -24,8 +24,11 @@ async function loadLatestConfig() {
       // 忽略错误，继续尝试其他方法
     }
     try {
+      // 使用动态路径，考虑 base 配置
+      const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || ''
+      const configPath = `${basePath}/navpress.config.js?t=${Date.now()}`
       const mod = await import(
-        /* @vite-ignore */ '/navpress.config.js?t=' + Date.now()
+        /* @vite-ignore */ configPath
       )
       return mod.default || {}
     } catch (e) {
