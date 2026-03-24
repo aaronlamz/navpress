@@ -1,0 +1,79 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # 或者你正在使用的其他主分支
+
+permissions:
+  contents: write # 确保 GITHUB_TOKEN 有写权限
+  pages: write
+
+jobs:
+  deploy:
+    if: contains(github.event.head_commit.message, 'deploy')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: yarn install # 或者 npm install
+
+      - name: Build project
+        run: |
+          echo "=== Starting build process ==="
+          echo "=== Current directory: $(pwd) ==="
+          echo "=== Directory contents before build: ==="
+          ls -la
+          echo "=== Running yarn build ==="
+          yarn build
+          echo "=== Build exit code: $? ==="
+          echo "=== Build process completed ==="
+          echo "=== Checking build output ==="
+          ls -la
+          echo "=== Checking dist directory ==="
+          ls -la dist/ || echo "dist directory not found!"
+          echo "=== Checking if dist exists: ==="
+          test -d dist && echo "dist directory exists" || echo "dist directory does not exist"
+          echo "=== Checking dist contents recursively: ==="
+          find . -name "dist" -type d 2>/dev/null || echo "No dist directories found"
+
+      - name: List build output
+        run: |
+          echo "=== Build output directory contents ==="
+          ls -la ./dist
+          echo "=== Assets directory contents ==="
+          ls -la ./dist/assets || echo "Assets directory not found"
+          echo "=== Images directory contents ==="
+          ls -la ./dist/images || echo "Images directory not found"
+
+      - name: Deploy to gh-pages
+        run: |
+          echo "=== 开始手动部署到gh-pages分支 ==="
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          echo "=== 检查dist目录内容 ==="
+          ls -la dist/
+          ls -la dist/assets/
+          ls -la dist/images/
+
+          echo "=== 强制推送到gh-pages分支 ==="
+          git checkout --orphan gh-pages-temp
+
+          echo "=== 只添加构建输出文件 ==="
+          cp -r dist/* .
+          git add .
+          git commit -m "Deploy to gh-pages: $(date) - Static files only"
+
+          echo "=== 强制推送并清理 ==="
+          git push origin gh-pages-temp:gh-pages --force
+          git checkout main
+          git branch -D gh-pages-temp
+
+          echo "=== 部署完成 ==="
+
+          echo "=== 部署完成 ==="
+        #   destination_dir: navpress  # 部署到 navpress 子目录，不指定就是根目录
+        #   cname: aaronlamz.github.io  # 可选: 如果你需要自定义域名

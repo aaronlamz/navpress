@@ -1,0 +1,86 @@
+{
+  "name": "navpress",
+  "version": "1.1.6",
+  "description": "Easy navigation website generator - base path fix",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "dev": "vite",
+    "build": "vite build && node ./src/node/prerender.cjs",
+    "serve": "vite preview",
+    "lint": "eslint src/",
+    "format": "prettier --write \"src/**/*.{js,vue,ts,json,css,scss,md}\"",
+    "prepublishOnly": "npm run build",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
+  },
+  "bin": {
+    "navpress": "bin/navpress.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaronlamz/navpress.git"
+  },
+  "keywords": [
+    "navpress",
+    "static-site-generator",
+    "navigation",
+    "vue",
+    "cli",
+    "website-builder"
+  ],
+  "files": [
+    "bin/",
+    "src/",
+    "public/",
+    "dist/",
+    "*.config.js",
+    "*.config.cjs",
+    "index.html",
+    "README.md",
+    "README_zh.md"
+  ],
+  "author": "aaronlamz",
+  "engines": {
+    "node": ">=18"
+  },
+  "engineStrict": true,
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aaronlamz/navpress/issues"
+  },
+  "homepage": "https://github.com/aaronlamz/navpress#readme",
+  "dependencies": {
+    "@vitejs/plugin-vue": "^5.1.0",
+    "autoprefixer": "^10.4.19",
+    "commander": "^8.0.0",
+    "fs-extra": "^11.2.0",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.6",
+    "vite": "^5.3.4",
+    "vue": "^3.4.33",
+    "vue-router": "^4.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-vue": "^9.27.0",
+    "husky": "^9.1.5",
+    "lint-staged": "^15.2.9",
+    "prettier": "^3.3.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,vue,ts,json,css,scss,md}": [
+      "prettier --write"
+    ]
+  }
+}
