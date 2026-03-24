@@ -37,6 +37,8 @@ program
   .action(async (cmd) => {
     const configPath = path.resolve(process.cwd(), cmd.config)
     process.env.CONFIG_PATH = configPath
+    // 传递工作目录，便于 vite.config.js 中正确解析用户配置
+    process.env.WORKING_DIR = process.cwd()
     const viteConfig = await loadViteConfig()
 
     // 获取 base 路径来决定打开的 URL
@@ -47,9 +49,19 @@ program
       ...viteConfig,
       configFile: false,
       server: {
+        // 保留 viteConfig 中的 watch 和 fs 配置（热重载依赖）
+        ...viteConfig.server,
         open: openUrl,
         port: 5173,
-        strictPort: false, // 允许使用其他端口
+        strictPort: false,
+        // 确保可以访问用户项目目录中的文件（如配置文件、静态资源）
+        fs: {
+          ...(viteConfig.server?.fs || {}),
+          allow: [
+            ...(viteConfig.server?.fs?.allow || []),
+            process.cwd(),
+          ],
+        },
       },
     })
 
@@ -83,6 +95,7 @@ program
       : null
 
     process.env.CONFIG_PATH = configPath
+    process.env.WORKING_DIR = process.cwd()
 
     if (outputDir) {
       process.env.OUTPUT_DIR = outputDir

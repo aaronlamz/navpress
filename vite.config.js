@@ -130,7 +130,8 @@ export default defineConfig(async () => {
           }
 
           // 提供一个开发端点，返回当前最新配置，便于刷新后也能获取到最新配置
-          server.middlewares.use('/__navpress_config', async (req, res) => {
+          // 同时注册带 base 前缀和不带前缀的路径，确保两种请求都能命中
+          const configHandler = async (req, res) => {
             try {
               res.setHeader('Content-Type', 'application/json')
               res.end(JSON.stringify(userConfig || {}))
@@ -138,7 +139,11 @@ export default defineConfig(async () => {
               res.statusCode = 500
               res.end(JSON.stringify({ error: 'failed to read config' }))
             }
-          })
+          }
+          server.middlewares.use('/__navpress_config', configHandler)
+          if (userConfig.base && userConfig.base !== '/') {
+            server.middlewares.use(`${userConfig.base}__navpress_config`, configHandler)
+          }
 
           // SPA fallback 中间件 - Vite 内置了这个功能，但我们需要确保它正确工作
           // 对于开发环境，Vite 会自动处理 SPA fallback
@@ -180,7 +185,7 @@ export default defineConfig(async () => {
       postcss: {
         plugins: [
           tailwindcss({
-            config: path.resolve(__dirname, 'tailwind.config.js'),
+            config: path.resolve(__dirname, 'tailwind.config.cjs'),
           }),
           autoprefixer,
         ],

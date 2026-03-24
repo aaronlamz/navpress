@@ -38,6 +38,7 @@
     "public/",
     "dist/",
     "*.config.js",
+    "*.config.cjs",
     "index.html",
     "README.md",
     "README_zh.md"

@@ -159,21 +159,46 @@ navpress build
 
 ## 开发
 
+### 本地开发（Demo 模式）
+
+直接在 navpress 仓库中开发和调试：
+
+```bash
+npm run dev      # 启动开发服务器（使用内置 navpress.config.js）
+npm run build    # 构建生产版本
+npm run serve    # 预览构建结果
+```
+
+### 本地验证（npm link 模式）
+
+模拟用户从 npm 安装后的使用体验：
+
+```bash
+# 1. 在 navpress 仓库创建全局链接
+cd /path/to/navpress
+npm link
+
+# 2. 在消费项目中使用链接
+cd /path/to/your-nav-project
+npm link navpress
+
+# 3. 正常使用 CLI 命令（修改 navpress 源码后立即生效）
+npx navpress dev
+npx navpress build
+
+# 4. 验证完成后清理
+npm unlink navpress && npm install
+```
+
 ### 热更新
 
 开发模式下支持配置文件热更新：
 
 - 修改 `navpress.config.js` 自动生效
 - 无需手动刷新页面
-- 实时预览配置变化
+- 刷新页面后配置不会回退到旧值
 
-### 自定义样式
-
-项目使用 Tailwind CSS，你可以：
-
-1. 修改现有组件样式
-2. 添加自定义 CSS 类
-3. 覆盖默认主题配置
+更多开发细节请参阅 [贡献指南](./CONTRIBUTING.md)。
 
 ## 常见问题
 

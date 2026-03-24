@@ -7,57 +7,35 @@ import './assets/style/index.css'
 const userConfig = reactive({})
 
 async function loadLatestConfig() {
-  // 1. 优先尝试从构建期注入的配置（如果存在）
+  // 1. 开发环境：优先从开发服务器端点获取最新配置（确保刷新后也能拿到最新值）
+  if (typeof window !== 'undefined' && import.meta.env.DEV) {
+    // 尝试带 base 路径和不带 base 路径两种 URL
+    const basePath = import.meta.env.BASE_URL || '/'
+    const urls = [
+      `${basePath}__navpress_config?t=${Date.now()}`,
+      `/__navpress_config?t=${Date.now()}`,
+    ]
+    for (const url of urls) {
+      try {
+        const resp = await fetch(url)
+        if (resp.ok) {
+          const config = await resp.json()
+          if (config && Object.keys(config).length > 0) {
+            return config
+          }
+        }
+      } catch (e) {
+        // 端点不可用，继续尝试下一个
+      }
+    }
+  }
+
+  // 2. 使用构建期注入的内联配置（生产环境主要走这里）
   if (typeof window !== 'undefined' && window.__USER_CONFIG__) {
-    console.log('使用内联配置:', window.__USER_CONFIG__)
     return window.__USER_CONFIG__
   }
 
-  // 2. 开发环境：尝试动态加载配置
-  if (typeof window !== 'undefined' && import.meta.env.DEV) {
-    try {
-      const resp = await fetch('/__navpress_config?t=' + Date.now())
-      if (resp.ok) {
-        return await resp.json()
-      }
-    } catch (e) {
-      // 忽略错误，继续尝试其他方法
-    }
-    try {
-      // 使用动态路径，考虑 base 配置
-      const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || ''
-      const configPath = `${basePath}/navpress.config.js?t=${Date.now()}`
-      const mod = await import(
-        /* @vite-ignore */ configPath
-      )
-      return mod.default || {}
-    } catch (e) {
-      // 忽略错误，继续尝试其他方法
-    }
-  }
-
-  // 3. 静态文件模式：尝试从根目录加载配置
-  if (typeof window !== 'undefined') {
-    try {
-      const resp = await fetch('/navpress.config.js?t=' + Date.now())
-      if (resp.ok) {
-        const text = await resp.text()
-        // 简单的配置解析，提取 export default 部分
-        const match = text.match(/export\s+default\s*({[\s\S]*?});?\s*$/)
-        if (match) {
-          try {
-            return eval('(' + match[1] + ')')
-          } catch (e) {
-            console.warn('配置解析失败:', e)
-          }
-        }
-      }
-    } catch (e) {
-      // 忽略错误，继续尝试其他方法
-    }
-  }
-
-  // 4. 最后回退到默认配置
+  // 3. 最后回退到默认配置
   return {
     title: 'NavPress',
     description: 'Static Site Generator',
@@ -139,5 +117,3 @@ if (typeof window !== 'undefined') {
     })
   }
 }
-// 测试部署 2025年 8月22日 星期五 10时54分42秒 CST
-// 测试部署触发 2025年 8月22日 星期五 11时00分02秒 CST

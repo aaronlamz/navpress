@@ -12,11 +12,11 @@
           <li v-for="(item, index) in sidebar" :key="item.link">
             <div
               class="flex items-center justify-between rounded-xl px-3 py-2.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-600/20 dark:to-purple-600/20 hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 backdrop-blur-sm border border-blue-200/40 dark:border-blue-400/20 shadow-md">
-              <button type="button" class="flex items-center flex-1 text-left focus:outline-none"
+              <button type="button" class="flex items-center flex-1 min-w-0 text-left focus:outline-none"
                 @click.stop="goToTopLevel(item.link)">
                 <img :src="item.icon || defaultFolderIcon" alt=""
                   class="w-5 h-5 mr-3 text-blue-600 dark:text-blue-400" />
-                <span class="block text-gray-800 dark:text-gray-100 font-medium py-1 flex-1">{{ item.text }}</span>
+                <span class="block text-gray-800 dark:text-gray-100 font-medium py-1 flex-1 truncate">{{ item.text }}</span>
               </button>
               <button type="button"
                 class="ml-2 px-2 py-1 rounded-lg hover:bg-white/40 dark:hover:bg-white/20 text-blue-600 dark:text-blue-400 focus:outline-none transition-colors"
@@ -33,7 +33,7 @@
                     <div class="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mr-3 flex-shrink-0"></div>
                     <img :src="group.icon || defaultSubmenuIcon" alt=""
                       class="w-4 h-4 mr-2.5 flex-shrink-0 text-gray-500 dark:text-gray-400" />
-                    {{ group.text }}
+                    <span class="truncate">{{ group.text }}</span>
                   </a>
                 </li>
               </ul>

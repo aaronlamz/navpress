@@ -14,11 +14,11 @@
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <div v-for="item in group.items" :key="item.link"
-            class="card bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition">
+            class="card bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition overflow-hidden">
             <img :src="item.icon || defaultLinkIcon" alt="" class="w-10 h-10 flex-shrink-0 rounded text-green-500" />
-            <a :href="item.link" target="_blank" class="flex-1 text-sm sm:text-base text-gray-800 dark:text-gray-200">
-              <div class="font-medium">{{ item.text }}</div>
-              <p class="text-gray-500 dark:text-gray-400 text-xs">
+            <a :href="item.link" target="_blank" class="flex-1 min-w-0 text-sm sm:text-base text-gray-800 dark:text-gray-200">
+              <div class="font-medium truncate">{{ item.text }}</div>
+              <p class="text-gray-500 dark:text-gray-400 text-xs truncate">
                 {{ item.description || 'No description available.' }}
               </p>
             </a>

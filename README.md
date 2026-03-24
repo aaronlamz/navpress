@@ -206,23 +206,35 @@ navpress build
 
 ## 🛠️ Development
 
-### Development Commands
+### Demo Mode (develop navpress itself)
 
 ```bash
-# Start development server with hot reload
-navpress dev
+npm run dev      # Start dev server with built-in demo config
+npm run build    # Build for production
+npm run serve    # Preview production build
+npm run lint     # Run linting
+npm run format   # Format code
+```
 
-# Build for production
-navpress build
+### npm link Mode (simulate real user experience)
 
-# Preview production build
-navpress serve
+Test navpress as an npm package in a consumer project:
 
-# Run linting
-yarn lint
+```bash
+# 1. Create global link in navpress repo
+cd /path/to/navpress
+npm link
 
-# Format code
-yarn format
+# 2. Use the link in your consumer project
+cd /path/to/your-nav-project
+npm link navpress
+
+# 3. Run CLI commands (changes to navpress source take effect immediately)
+npx navpress dev
+npx navpress build
+
+# 4. Clean up when done
+npm unlink navpress && npm install
 ```
 
 ### Hot Reload
@@ -231,29 +243,31 @@ Development mode supports configuration hot reload:
 
 - Modify `navpress.config.js` and changes apply automatically
 - No need to manually refresh the page
-- Real-time preview of configuration changes
-
-### Custom Styling
-
-This project uses Tailwind CSS. You can:
-
-1. Modify existing component styles
-2. Add custom CSS classes
-3. Override default theme configuration
+- Page refresh preserves the latest config (no stale data)
 
 ### Project Structure
 
 ```
 navpress/
+├── bin/
+│   └── navpress.mjs          # CLI entry point
 ├── src/
-│   ├── components/     # Vue components
-│   ├── pages/         # Page components
-│   ├── utils/         # Utility functions
-│   └── assets/        # Static assets
-├── public/            # Public assets
-├── navpress.config.js # Configuration file
-└── package.json       # Dependencies
+│   ├── main.js               # App entry (config loading + HMR)
+│   ├── App.vue               # Root component (layout)
+│   ├── components/            # Vue components
+│   ├── pages/                 # Page components
+│   ├── utils/                 # Utility functions
+│   ├── assets/                # Static assets & styles
+│   ├── router/                # Vue Router config
+│   └── node/                  # SSR prerender
+├── vite.config.js             # Vite config (with hot reload plugin)
+├── tailwind.config.cjs        # Tailwind CSS config
+├── navpress.config.js         # Demo configuration
+├── index.html                 # HTML template
+└── package.json
 ```
+
+For detailed development guide, see [Contributing Guide](./CONTRIBUTING.md).
 
 ## ❓ FAQ
 
