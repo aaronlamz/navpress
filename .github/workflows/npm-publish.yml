@@ -65,10 +65,14 @@ jobs:
           fi
           echo "Deploy type: $DEPLOY_TYPE"
 
-          # 更新版本号（仅本地，不 commit）
+          # 以 npm 远程版本为基准 bump（避免本地版本落后导致重复发布）
+          # 先将本地 package.json 同步到远程版本，再 bump
+          if [ "$REMOTE_VERSION" != "0.0.0" ]; then
+            npm version "$REMOTE_VERSION" --no-git-tag-version --allow-same-version
+          fi
           npm version $DEPLOY_TYPE --no-git-tag-version
           NEW_VERSION=$(node -p "require('./package.json').version")
-          echo "New version: $NEW_VERSION"
+          echo "New version: $NEW_VERSION (bumped from remote $REMOTE_VERSION)"
 
           # ⚡ 先发布到 npm — 失败时版本号不会污染 git
           echo "Publishing $PACKAGE_NAME@$NEW_VERSION ..."
