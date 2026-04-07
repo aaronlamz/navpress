@@ -3,14 +3,10 @@ name: Auto Deploy to NPM
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - '**.md'
-      - '.github/workflows/deploy-pages.yml'
 
 permissions:
   contents: write
   actions: write
-  pull-requests: write
 
 jobs:
   deploy:
@@ -29,155 +25,66 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-
-      - name: Setup Yarn
-        run: npm install -g yarn
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Run tests (if available)
-        run: yarn test || echo "No tests found"
-
-      - name: Run linter (optional)
-        run: yarn lint || echo "Linting issues found, but continuing deployment"
+        run: npm ci
 
       - name: Build package
-        run: yarn build
+        run: npm run build
 
       - name: Configure Git
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-      - name: Configure npm authentication
+      - name: Verify npm authentication
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Check if NPM_TOKEN is set
-          if [ -z "$NPM_TOKEN" ]; then
-            echo "❌ NPM_TOKEN is not set"
-            exit 1
-          fi
-          echo "✅ NPM_TOKEN is set (length: ${#NPM_TOKEN})"
-
-          # Clear any existing npm config
-          npm config delete _authToken || true
-          npm config delete //registry.npmjs.org/:_authToken || true
-
-          # Set npm token directly
-          npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-
-          # Verify the token is set
-          echo "=== Debug npm authentication ==="
-          npm config list
-          echo "Token set: $(npm config get //registry.npmjs.org/:_authToken | cut -c1-10)..."
-          npm whoami || echo "❌ npm whoami failed"
-
-      - name: Debug npm before publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          echo "=== Current npm configuration ==="
-          npm config list
-          echo "=== Testing npm authentication ==="
+          echo "=== npm authentication check ==="
           npm whoami
-          npm ping
-          npm view navpress version || echo "Package not found yet"
-
-          # Verify npm token is working
-          if ! npm whoami > /dev/null 2>&1; then
-            echo "❌ npm authentication failed"
-            exit 1
-          fi
           echo "✅ npm authentication successful"
 
-      - name: Check if should deploy
-        id: should-deploy
-        run: |
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          if [[ $COMMIT_MSG =~ publish ]]; then
-            echo "deploy=true" >> $GITHUB_OUTPUT
-            echo "✅ Deploy triggered by commit message: $COMMIT_MSG"
-          else
-            echo "deploy=false" >> $GITHUB_OUTPUT
-            echo "⏭️ Skipping deployment - no publish identifier found in: $COMMIT_MSG"
-          fi
-
       - name: Bump version and publish
-        if: steps.should-deploy.outputs.deploy == 'true'
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
-          echo "Detected package name: $PACKAGE_NAME"
-
-          # 获取远程版本
           REMOTE_VERSION=$(npm view $PACKAGE_NAME version 2>/dev/null || echo "0.0.0")
-          echo "Remote npm version: $REMOTE_VERSION"
-
-          # 获取本地版本
           LOCAL_VERSION=$(node -p "require('./package.json').version")
-          echo "Local version: $LOCAL_VERSION"
+          echo "Remote: $REMOTE_VERSION | Local: $LOCAL_VERSION"
 
-          # 默认发布 patch 版本
+          # 根据 commit message 决定版本类型（默认 patch）
           DEPLOY_TYPE="patch"
-
-          # 根据 commit message 决定版本类型
           COMMIT_MSG="${{ github.event.head_commit.message }}"
-          echo "Commit message: $COMMIT_MSG"
-
-          if [[ $COMMIT_MSG =~ ^breaking: ]] || [[ $COMMIT_MSG =~ \[deploy:major\] ]]; then
+          if [[ $COMMIT_MSG =~ ^breaking: ]] || [[ $COMMIT_MSG =~ \[publish:major\] ]]; then
             DEPLOY_TYPE="major"
-          elif [[ $COMMIT_MSG =~ ^feat: ]] || [[ $COMMIT_MSG =~ \[deploy:minor\] ]]; then
+          elif [[ $COMMIT_MSG =~ ^feat: ]] || [[ $COMMIT_MSG =~ \[publish:minor\] ]]; then
             DEPLOY_TYPE="minor"
           fi
-          echo "Deploying with type: $DEPLOY_TYPE"
+          echo "Deploy type: $DEPLOY_TYPE"
 
-          # 更新版本号
+          # 更新版本号（仅本地，不 commit）
           npm version $DEPLOY_TYPE --no-git-tag-version
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "New version: $NEW_VERSION"
 
-          # 提交并打 tag
-          git add package.json yarn.lock
-          git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
-          git tag -f "v$NEW_VERSION"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git push origin main
-          git push origin "v$NEW_VERSION" --force
-
-          # 发布到 npm
-          echo "Publishing navpress@$NEW_VERSION to npm..."
-
-          # Check if package exists on npm
-          if npm view navpress > /dev/null 2>&1; then
-            echo "Package navpress already exists on npm, publishing new version..."
-            PUBLISH_CMD="npm publish"
-          else
-            echo "Package navpress does not exist on npm, publishing for the first time..."
-            PUBLISH_CMD="npm publish --access public"
-          fi
-
-          if $PUBLISH_CMD; then
-            echo "Successfully published navpress@$NEW_VERSION"
-          else
-            echo "❌ Publish failed, exiting..."
+          # ⚡ 先发布到 npm — 失败时版本号不会污染 git
+          echo "Publishing $PACKAGE_NAME@$NEW_VERSION ..."
+          if ! npm publish; then
+            echo "❌ Publish failed! Version NOT committed to git — safe to retry."
             exit 1
           fi
+          echo "✅ Published $PACKAGE_NAME@$NEW_VERSION"
 
-          # ✅ 发布成功后，确保 package.json 中的版本号为最新并 push
-          git add package.json yarn.lock
-          git commit -m "chore: update package.json to published version v$NEW_VERSION [skip ci]" || echo "No changes to commit"
+          # 发布成功后才提交版本号并打 tag
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
+          git tag "v$NEW_VERSION"
           git push origin main
+          git push origin "v$NEW_VERSION"
 
       - name: Get version for release
         id: get-version
