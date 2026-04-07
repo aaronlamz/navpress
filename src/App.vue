@@ -7,13 +7,13 @@
         :sidebar="$config.sidebar"
         :isSidebarOpen="isSidebarOpen"
         :class="{ show: isSidebarOpen }"
-        class="sidebar-container bg-gray-100 dark:bg-gray-800"
+        class="sidebar-container"
         @close-sidebar="toggleSidebar"
         :toggleSidebar="toggleSidebar"
         :urlFormat="$config.urlFormat || 'query'"
       />
       <div
-        class="content-container flex-1 overflow-y-auto p-6 dark:bg-gray-900"
+        class="content-container flex-1 overflow-y-auto p-6"
         @click="closeSidebarOnContentClick"
       >
         <router-view />
@@ -72,7 +72,18 @@ export default {
 #app {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* 保持应用高度为视口高度 */
+  height: 100vh;
+  background: #f0f2f5;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(59, 130, 246, 0.08) 0%, transparent 60%);
+}
+
+.dark #app {
+  background: #0f172a;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(124, 58, 237, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
 }
 
 .navbar {
@@ -83,44 +94,39 @@ export default {
 }
 
 .main-container {
-  margin-top: 4rem; /* 与导航栏高度一致，确保内容不被遮挡 */
-  height: calc(100vh - 4rem); /* 内容区域高度 = 视口高度 - 导航栏高度 */
+  margin-top: 3.5rem;
+  height: calc(100vh - 3.5rem);
   display: flex;
 }
 
-.min-container-height {
-  min-height: calc(100vh - 8rem);
-}
-
 .sidebar-container {
-  width: 250px;
-  overflow-y: auto; /* 确保侧边栏可滚动 */
-  transition: transform 0.3s ease; /* 添加过渡动画 */
+  width: 260px;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  background: transparent;
 }
 
 .content-container {
   flex: 1;
-  overflow-y: auto; /* 使内容区域可滚动 */
+  overflow-y: auto;
   padding: 20px;
-  background-color: white;
-}
-
-.dark .content-container {
-  background-color: #1a202c;
+  background: transparent;
 }
 
 /* 移动端适配 */
 @media (max-width: 640px) {
   .sidebar-container {
     position: fixed;
-    top: 4rem; /* 与导航栏对齐 */
+    top: 3.5rem;
     left: 0;
-    height: calc(100vh - 4rem); /* 高度 = 视口高度 - 导航栏高度 */
-    transform: translateX(-100%); /* 初始隐藏 */
+    width: 100%;
+    height: calc(100vh - 3.5rem);
+    transform: translateX(-100%);
+    z-index: 40;
   }
 
   .sidebar-container.show {
-    transform: translateX(0); /* 显示时移入屏幕 */
+    transform: translateX(0);
   }
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
-  <div class="p-4 sm:p-8 bg-gray-100 dark:bg-gray-900 min-h-screen">
+  <div class="p-4 sm:p-8 min-h-screen">
     <h1 class="text-2xl sm:text-4xl font-bold mb-6 dark:text-white text-center sm:text-left">
       {{ title }}
     </h1>
     <div class="space-y-8">
       <div v-for="group in items" :key="group.link" :id="getGroupId(group.link)"
-        class="group-container bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+        class="group-container glass-card rounded-2xl p-5">
         <h2 class="text-lg sm:text-2xl font-semibold mb-4 dark:text-gray-200 flex items-center">
           <span class="mr-2">{{ group.text }}</span>
           <span class="text-sm text-gray-500 dark:text-gray-400 font-normal">
@@ -14,8 +14,10 @@
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <div v-for="item in group.items" :key="item.link"
-            class="card bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition overflow-hidden">
-            <img :src="item.icon || defaultLinkIcon" alt="" class="w-10 h-10 flex-shrink-0 rounded text-green-500" />
+            class="card glass-link-card rounded-xl p-4 flex items-center gap-4 transition-all duration-200 overflow-hidden">
+            <div class="w-10 h-10 flex-shrink-0 rounded-xl icon-container flex items-center justify-center">
+              <img :src="item.icon || defaultLinkIcon" alt="" class="w-6 h-6" />
+            </div>
             <a :href="item.link" target="_blank" class="flex-1 min-w-0 text-sm sm:text-base text-gray-800 dark:text-gray-200">
               <div class="font-medium truncate">{{ item.text }}</div>
               <p class="text-gray-500 dark:text-gray-400 text-xs truncate">
@@ -29,7 +31,7 @@
 
     <!-- 滚动到顶部按钮 -->
     <button v-show="showScrollTop" @click="scrollToTop"
-      class="fixed bottom-8 right-8 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50"
+      class="fixed bottom-8 right-8 glass-fab p-3 rounded-2xl transition-all duration-300 z-50"
       title="回到顶部">
       <i class="fas fa-arrow-up"></i>
     </button>
@@ -256,28 +258,67 @@ export default {
 </script>
 
 <style scoped>
-.card {
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
+.glass-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+.dark .glass-card {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
-.card:hover {
+.glass-link-card {
+  background: #f8fafc;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+.glass-link-card:hover {
+  background: #ffffff;
+  border-color: rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
   transform: translateY(-1px);
-  border-color: #e5e7eb;
-  /* 更轻的边框色 */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+.dark .glass-link-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.04);
+}
+.dark .glass-link-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(129, 140, 248, 0.2);
+  box-shadow: 0 4px 12px rgba(129, 140, 248, 0.08);
 }
 
-/* 针对小屏幕的优化样式 */
+.glass-fab {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  color: #3b82f6;
+}
+.glass-fab:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.15);
+}
+.dark .glass-fab {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #93c5fd;
+}
+
+.icon-container {
+  background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+  border: 1px solid rgba(99, 102, 241, 0.08);
+}
+.dark .icon-container {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border-color: rgba(139, 92, 246, 0.12);
+}
+
 .group-container {
-  transition: all 0.3s ease;
-  /* 让元素通过 scrollIntoView 顶到视口顶部时留出固定导航的空间 */
+  transition: all 0.2s ease;
   scroll-margin-top: 110px;
-  /* 80(navbar) + 30(offset) */
-}
-
-.group-container:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* 高亮效果 */

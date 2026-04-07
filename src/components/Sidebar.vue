@@ -3,15 +3,25 @@
     <!-- 侧边栏 -->
     <transition name="slide">
       <aside v-if="isSidebarOpen || isDesktop"
-        class="w-64 sm:w-64 p-4 fixed sm:relative z-40 transition-transform transform backdrop-blur-md bg-white/60 dark:bg-gray-800/40 border border-white/20 dark:border-white/10 shadow-md rounded-2xl will-change-transform"
+        class="w-64 sm:w-64 p-4 fixed sm:relative z-40 transition-transform transform glass-sidebar will-change-transform"
         :class="{
           '-translate-x-full': !isSidebarOpen && !isDesktop,
           'translate-x-0': isSidebarOpen || isDesktop,
         }">
+        <!-- 一键展开/收起 -->
+        <div class="flex items-center justify-end mb-2">
+          <button type="button"
+            class="text-xs px-2.5 py-1 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200/60 dark:hover:bg-white/10 transition-colors focus:outline-none flex items-center gap-1"
+            @click="toggleAll">
+            <i :class="allExpanded ? 'fas fa-compress-alt' : 'fas fa-expand-alt'" class="text-[10px]"></i>
+            <span>{{ allExpanded ? '收起全部' : '展开全部' }}</span>
+          </button>
+        </div>
+
         <ul class="space-y-2">
           <li v-for="(item, index) in sidebar" :key="item.link">
             <div
-              class="flex items-center justify-between rounded-xl px-3 py-2.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-600/20 dark:to-purple-600/20 hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 backdrop-blur-sm border border-blue-200/40 dark:border-blue-400/20 shadow-md">
+              class="flex items-center justify-between rounded-2xl px-3 py-2.5 glass-menu-item transition-all duration-200">
               <button type="button" class="flex items-center flex-1 min-w-0 text-left focus:outline-none"
                 @click.stop="goToTopLevel(item.link)">
                 <img :src="item.icon || defaultFolderIcon" alt=""
@@ -19,9 +29,9 @@
                 <span class="block text-gray-800 dark:text-gray-100 font-medium py-1 flex-1 truncate">{{ item.text }}</span>
               </button>
               <button type="button"
-                class="ml-2 px-2 py-1 rounded-lg hover:bg-white/40 dark:hover:bg-white/20 text-blue-600 dark:text-blue-400 focus:outline-none transition-colors"
+                class="ml-2 px-2 py-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 focus:outline-none transition-colors"
                 @click.stop="toggleMenu(index)" aria-label="Toggle submenu">
-                <i :class="expandedMenu[index] ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+                <i :class="expandedMenu[index] ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
               </button>
             </div>
             <transition name="accordion" @enter="onEnter" @after-enter="onAfterEnter" @leave="onLeave"
@@ -29,10 +39,9 @@
               <ul v-show="expandedMenu[index]" class="ml-4 mt-2 space-y-1.5 submenu-list smooth">
                 <li v-for="group in item.items" :key="group.link">
                   <a @click="handleGroupClick(item.link, group.link)"
-                    class="submenu-item block text-gray-600 dark:text-gray-300 px-3 py-2 rounded-lg flex items-center cursor-pointer bg-white/60 hover:bg-white/80 dark:bg-white/10 dark:hover:bg-white/20 border border-gray-200/50 dark:border-gray-600/30 shadow-sm hover:shadow-md transition-all duration-200">
-                    <div class="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mr-3 flex-shrink-0"></div>
+                    class="submenu-item block text-gray-600 dark:text-gray-300 px-3 py-2 rounded-xl flex items-center cursor-pointer glass-submenu-item transition-all duration-200">
                     <img :src="group.icon || defaultSubmenuIcon" alt=""
-                      class="w-4 h-4 mr-2.5 flex-shrink-0 text-gray-500 dark:text-gray-400" />
+                      class="w-4 h-4 mr-2.5 flex-shrink-0" />
                     <span class="truncate">{{ group.text }}</span>
                   </a>
                 </li>
@@ -46,7 +55,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, onUnmounted } from "vue";
+import { reactive, ref, computed, onMounted, onUnmounted } from "vue";
 import { generateNavUrl } from "../utils/urlHelper.js";
 import defaultFolderIcon from "../assets/icons/default-folder.svg";
 import defaultSubmenuIcon from "../assets/icons/default-submenu.svg";
@@ -103,9 +112,19 @@ export default {
       }
     });
 
-    return { expandedMenu, isDesktop };
+    const allExpanded = computed(() => {
+      return props.sidebar.every((_, index) => expandedMenu[index]);
+    });
+
+    return { expandedMenu, isDesktop, allExpanded };
   },
   methods: {
+    toggleAll() {
+      const shouldExpand = !this.allExpanded;
+      this.sidebar.forEach((_, index) => {
+        this.expandedMenu[index] = shouldExpand;
+      });
+    },
     toggleMenu(index) {
       this.expandedMenu[index] = !this.expandedMenu[index];
     },
@@ -201,18 +220,52 @@ export default {
 </script>
 
 <style scoped>
-.submenu-item {
-  transition:
-    background 0.3s ease,
-    transform 0.3s ease,
-    border-radius 0.3s ease;
-  border-radius: 0.5rem;
+.glass-sidebar {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+.dark .glass-sidebar {
+  background: rgba(15, 23, 42, 0.72);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
-.submenu-item:hover {
-  background-image: linear-gradient(135deg,
-      #e0eafc,
-      #cfdef3);
+.glass-menu-item {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+.glass-menu-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.dark .glass-menu-item {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+.dark .glass-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.glass-submenu-item {
+  background: transparent;
+  border: 1px solid transparent;
+}
+.glass-submenu-item:hover {
+  background: #f1f5f9;
+  border-color: rgba(99, 102, 241, 0.12);
+}
+.dark .glass-submenu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(129, 140, 248, 0.15);
+}
+
+.submenu-item {
+  transition: all 0.2s ease;
 }
 
 .accordion-enter-active,
