@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "vite build && node ./src/node/prerender.cjs",
     "serve": "vite preview",
+    "preview": "npm run build && node bin/navpress.mjs dev",
     "lint": "eslint src/",
     "format": "prettier --write \"src/**/*.{js,vue,ts,json,css,scss,md}\"",
     "prepublishOnly": "npm run build",
@@ -34,12 +35,7 @@
   ],
   "files": [
     "bin/",
-    "src/",
-    "public/",
     "dist/",
-    "*.config.js",
-    "*.config.cjs",
-    "index.html",
     "README.md",
     "README_zh.md"
   ],
@@ -54,24 +50,24 @@
   },
   "homepage": "https://github.com/aaronlamz/navpress#readme",
   "dependencies": {
-    "@vitejs/plugin-vue": "^5.1.0",
-    "autoprefixer": "^10.4.19",
-    "commander": "^8.0.0",
-    "fs-extra": "^11.2.0",
-    "postcss": "^8.4.39",
-    "tailwindcss": "^3.4.6",
-    "vite": "^5.3.4",
-    "vue": "^3.4.33",
-    "vue-router": "^4.4.0"
+    "commander": "^8.0.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.0",
+    "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-vue": "^9.27.0",
+    "fs-extra": "^11.2.0",
     "husky": "^9.1.5",
     "lint-staged": "^15.2.9",
-    "prettier": "^3.3.3"
+    "postcss": "^8.4.39",
+    "prettier": "^3.3.3",
+    "tailwindcss": "^3.4.6",
+    "vite": "^5.3.4",
+    "vue": "^3.4.33",
+    "vue-router": "^4.4.0"
   },
   "husky": {
     "hooks": {

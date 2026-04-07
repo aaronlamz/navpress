@@ -35,106 +35,101 @@ npm install
 
 ## 🔧 本地开发与验证
 
-NavPress 有两种开发验证场景：**Demo 模式**（验证 navpress 自身功能）和 **npm link 模式**（模拟真实用户安装后的使用体验）。两种都需要验证通过才能发布。
+### 架构说明
 
-### 场景一：Demo 模式（开发 navpress 自身）
+NavPress 采用**预构建 + 运行时注入**的架构：
 
-直接在 navpress 仓库中运行，使用内置的 `navpress.config.js` 作为演示数据：
+- 开发者在 `src/` 中编写 Vue 组件和样式
+- `npm run build` 将源码编译为 `dist/`（预构建产物）
+- 用户安装 navpress 后，CLI（`bin/navpress.mjs`）直接使用 `dist/` 中的预构建文件，**不再从源码编译**
+- 用户的 `navpress.config.js` 在运行时注入到预构建的 HTML 中
+
+因此，贡献者需要通过**三个阶段**验证改动：
+
+```
+源码开发（Vite HMR）→ 构建 dist/ → 用 CLI 验证（和用户体验一致）
+```
+
+### 阶段一：源码开发（快速迭代）
+
+使用 Vite 开发服务器，修改 Vue 组件/样式时享受 HMR 热更新：
 
 ```bash
-# 启动开发服务器（使用仓库根目录的 navpress.config.js）
 npm run dev
-
-# 构建生产版本
-npm run build
-
-# 预览构建结果
-npm run serve
 ```
+
+这会从 `src/` 源码启动 Vite，使用仓库根目录的 `navpress.config.js` 作为演示数据。
 
 **验证要点：**
-- 页面正常渲染，侧边栏、导航栏、卡片列表显示正确
-- 修改 `navpress.config.js` 后页面自动热更新（无需手动刷新）
-- 刷新页面后配置仍为最新值
-- 暗色模式切换正常
-- 移动端响应式布局正常
-- 构建产物 `dist/` 中的 HTML 包含正确的 meta 和配置数据
+- 页面正常渲染（侧边栏、导航栏、卡片列表）
+- 修改 Vue 组件/CSS 后页面热更新
+- 暗色模式、移动端响应式正常
 
-### 场景二：npm link 模式（模拟用户安装使用）
+### 阶段二：预览模式（一键验证用户体验）
 
-这是验证发布后用户体验的关键步骤。通过 `npm link` 将本地 navpress 链接到一个消费项目中，模拟从 npm 安装后的行为。
-
-#### 步骤 1：创建全局链接
+改完源码后，用一条命令构建 dist/ 并以 CLI 模式服务，**效果和用户 `npm install navpress` 后完全一致**：
 
 ```bash
-# 在 navpress 仓库根目录
-cd /path/to/navpress
-npm link
+npm run preview
 ```
 
-#### 步骤 2：在消费项目中使用链接
+这等价于 `npm run build && node bin/navpress.mjs dev`。它会：
+1. 用 Vite 将 `src/` 编译为 `dist/`
+2. 用 CLI 的轻量 HTTP server 服务 `dist/`（和用户使用的是同一套代码路径）
+
+**验证要点：**
+- 页面正常渲染，样式完整（Tailwind 类生效、无丢失）
+- 配置注入正确（标题、侧边栏数据）
+- 修改 `navpress.config.js` 后页面自动刷新
+- 卡片文字不溢出容器
+
+> 如果阶段一和阶段二效果不一致，说明预构建过程有问题，需要排查 `vite.config.js` 或 `prerender.cjs`。
+
+### 阶段三：npm link 模式（跨项目集成验证）
+
+模拟真实用户在独立项目中安装使用 navpress 的体验：
 
 ```bash
-# 在消费项目目录（如 pintree-nav）
+# 1. 在 navpress 仓库构建并创建全局链接
+npm run build
+npm link
+
+# 2. 在消费项目中使用链接
 cd /path/to/your-nav-project
 npm link navpress
-```
 
-> 此时 `node_modules/navpress` 是一个指向你本地 navpress 仓库的 symlink，修改 navpress 源码后消费项目立即生效。
+# 3. 运行 CLI 命令
+npx navpress dev     # 开发服务器
+npx navpress build   # 构建静态站点
 
-#### 步骤 3：运行与验证
-
-```bash
-# 开发模式
-npx navpress dev
-
-# 构建
-npx navpress build
+# 4. 验证完成后清理
+npm unlink navpress && npm install
 ```
 
 **验证要点：**
-- CLI 命令 `navpress dev` / `navpress build` 正常执行
-- 用户项目的 `navpress.config.js` 被正确加载（检查终端日志）
+- CLI 命令正常执行，配置被正确加载（检查终端日志）
 - `base` 路径配置生效（如 `/admin/docs/navpress/`）
-- 配置文件修改后热重载正常工作
-- 构建产物中样式完整（Tailwind CSS 类正确生成）
-- 卡片文字不溢出容器
-- 生产构建的 HTML 中 `window.__USER_CONFIG__` 包含完整配置
-
-#### 步骤 4：清理链接
-
-验证完成后，恢复消费项目的 npm 依赖：
-
-```bash
-# 在消费项目中取消链接
-cd /path/to/your-nav-project
-npm unlink navpress
-npm install
-
-# 在 navpress 仓库取消全局链接（可选）
-cd /path/to/navpress
-npm unlink
-```
+- 构建产物 `dist/index.html` 中 `window.__USER_CONFIG__` 包含完整配置
+- 资源路径（JS/CSS/图片）匹配 `base` 配置
 
 ### 快速验证 Checklist
 
-在发布前，按顺序完成以下验证：
+发布前按顺序完成：
 
 ```
-□ Demo 模式
-  □ npm run dev — 页面正常加载
-  □ 修改 navpress.config.js — 热重载生效
-  □ 刷新浏览器 — 配置不回退
-  □ npm run build — 构建无报错
-  □ npm run serve — 预览页面正常
+□ 阶段一：源码开发
+  □ npm run dev — 页面正常渲染
+  □ 修改 Vue 组件 — HMR 生效
 
-□ npm link 模式（消费项目）
-  □ npx navpress dev — 正确加载用户配置
-  □ base 路径正确（如果配置了非 / 路径）
-  □ 修改用户 navpress.config.js — 热重载生效
+□ 阶段二：预览模式（关键！）
+  □ npm run preview — 页面正常、样式完整
+  □ 修改 navpress.config.js — 配置热重载生效
   □ 刷新浏览器 — 配置不回退
+
+□ 阶段三：npm link（可选，发布大版本时推荐）
+  □ npx navpress dev — 正确加载消费项目配置
   □ npx navpress build — 构建无报错
-  □ 检查 dist/index.html — 样式和配置数据完整
+  □ 检查 dist/index.html — 资源路径和配置正确
 ```
 
 ### 常见问题排查
@@ -142,11 +137,11 @@ npm unlink
 | 问题 | 原因 | 解决方案 |
 |------|------|----------|
 | `navpress: command not found` | 全局链接未生效 | 重新执行 `npm link` |
-| 配置文件未找到 | `WORKING_DIR` 未正确设置 | 确保从消费项目根目录运行命令 |
-| 样式丢失/Tailwind 类无效 | PostCSS 配置冲突 | 确认消费项目没有自己的 `postcss.config.js` |
+| 预览模式样式和开发不一致 | Tailwind purge 去掉了动态类 | 检查 `tailwind.config.cjs` 的 `content` 路径 |
+| 配置文件未找到 | CLI 未正确解析路径 | 确保从消费项目根目录运行命令 |
 | 热重载不生效 | 文件监听器未检测到变化 | 检查终端是否有 `Config file changed` 日志 |
-| 刷新后配置回退 | `/__navpress_config` 端点异常 | 在浏览器中直接访问该端点确认返回最新配置 |
-| `base` 路径下页面 404 | SPA fallback 未正确配置 | 确认 `navpress.config.js` 中 `base` 字段以 `/` 结尾 |
+| `base` 路径下页面 404 | SPA fallback 未生效 | 确认 `base` 字段以 `/` 结尾 |
+| 资源加载 404 | dist/ 中 base 路径未替换 | 检查 `bin/navpress.mjs` 的 `buildHtml` 函数 |
 
 ## 🔄 贡献流程
 

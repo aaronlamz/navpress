@@ -159,36 +159,23 @@ navpress build
 
 ## 开发
 
-### 本地开发（Demo 模式）
-
-直接在 navpress 仓库中开发和调试：
+### 开发命令
 
 ```bash
-npm run dev      # 启动开发服务器（使用内置 navpress.config.js）
-npm run build    # 构建生产版本
-npm run serve    # 预览构建结果
+npm run dev      # Vite 开发服务器（源码 HMR，快速迭代）
+npm run build    # 构建 src/ → dist/（预构建产物）
+npm run preview  # 构建 + CLI 服务（和用户体验完全一致）
 ```
 
-### 本地验证（npm link 模式）
+### 开发流程
 
-模拟用户从 npm 安装后的使用体验：
-
-```bash
-# 1. 在 navpress 仓库创建全局链接
-cd /path/to/navpress
-npm link
-
-# 2. 在消费项目中使用链接
-cd /path/to/your-nav-project
-npm link navpress
-
-# 3. 正常使用 CLI 命令（修改 navpress 源码后立即生效）
-npx navpress dev
-npx navpress build
-
-# 4. 验证完成后清理
-npm unlink navpress && npm install
 ```
+npm run dev      →  编辑源码，Vite HMR 即时预览
+npm run preview  →  验证 CLI 服务预构建产物的效果（关键步骤）
+npm link         →  在真实消费项目中测试（可选）
+```
+
+`npm run preview` 是关键命令 — 先构建 `dist/`，然后用 CLI 启动开发服务器，效果和用户从 npm 安装后完全一致。
 
 ### 热更新
 

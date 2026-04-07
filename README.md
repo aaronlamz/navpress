@@ -206,44 +206,25 @@ navpress build
 
 ## 🛠️ Development
 
-### Demo Mode (develop navpress itself)
+### Commands
 
 ```bash
-npm run dev      # Start dev server with built-in demo config
-npm run build    # Build for production
-npm run serve    # Preview production build
+npm run dev      # Vite dev server (source code HMR, fast iteration)
+npm run build    # Build src/ → dist/ (pre-built assets)
+npm run preview  # Build + serve with CLI (same as end-user experience)
 npm run lint     # Run linting
 npm run format   # Format code
 ```
 
-### npm link Mode (simulate real user experience)
+### Development Workflow
 
-Test navpress as an npm package in a consumer project:
-
-```bash
-# 1. Create global link in navpress repo
-cd /path/to/navpress
-npm link
-
-# 2. Use the link in your consumer project
-cd /path/to/your-nav-project
-npm link navpress
-
-# 3. Run CLI commands (changes to navpress source take effect immediately)
-npx navpress dev
-npx navpress build
-
-# 4. Clean up when done
-npm unlink navpress && npm install
+```
+npm run dev      →  Edit source code with Vite HMR
+npm run preview  →  Verify the CLI serves pre-built dist/ correctly
+npm link         →  Test in a real consumer project (optional)
 ```
 
-### Hot Reload
-
-Development mode supports configuration hot reload:
-
-- Modify `navpress.config.js` and changes apply automatically
-- No need to manually refresh the page
-- Page refresh preserves the latest config (no stale data)
+`npm run preview` is the key command — it builds `dist/` and then starts the CLI dev server, giving you the exact same experience as a user who installed navpress from npm.
 
 ### Project Structure
 

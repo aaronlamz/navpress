@@ -2,9 +2,9 @@
 export default {
   title: '我的导航站',
   description: 'A simple static site generator with configurable navigation',
-  logo: '/navpress/images/logo.svg',
+  logo: '/images/logo.svg',
   github: 'https://github.com/aaronlamz/navpress',
-  base: '/navpress/',
+  base: '/',
   urlFormat: 'query', // 'query' | 'path' | 'hash'
 
   meta: {
