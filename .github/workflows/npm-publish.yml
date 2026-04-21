@@ -49,6 +49,9 @@ jobs:
       - name: Bump version and publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           REMOTE_VERSION=$(npm view $PACKAGE_NAME version 2>/dev/null || echo "0.0.0")
@@ -57,7 +60,6 @@ jobs:
 
           # 根据 commit message 决定版本类型（默认 patch）
           DEPLOY_TYPE="patch"
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
           if [[ $COMMIT_MSG =~ ^breaking: ]] || [[ $COMMIT_MSG =~ \[publish:major\] ]]; then
             DEPLOY_TYPE="major"
           elif [[ $COMMIT_MSG =~ ^feat: ]] || [[ $COMMIT_MSG =~ \[publish:minor\] ]]; then
@@ -83,7 +85,7 @@ jobs:
           echo "✅ Published $PACKAGE_NAME@$NEW_VERSION"
 
           # 发布成功后才提交版本号并打 tag
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GH_REPO}.git"
           git add package.json package-lock.json
           git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
           git tag -f "v$NEW_VERSION"
