@@ -26,7 +26,7 @@
                 @click.stop="goToTopLevel(item.link)">
                 <img :src="item.icon || defaultFolderIcon" alt=""
                   class="w-5 h-5 mr-3 text-blue-600 dark:text-blue-400" />
-                <span class="block text-gray-800 dark:text-gray-100 font-medium py-1 flex-1 truncate">{{ item.text }}</span>
+                <span :title="item.text" class="block text-gray-800 dark:text-gray-100 font-medium py-1 flex-1 truncate">{{ item.text }}</span>
               </button>
               <button type="button"
                 class="ml-2 px-2 py-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 focus:outline-none transition-colors"
@@ -42,7 +42,7 @@
                     class="submenu-item block text-gray-600 dark:text-gray-300 px-3 py-2 rounded-xl flex items-center cursor-pointer glass-submenu-item transition-all duration-200">
                     <img :src="group.icon || defaultSubmenuIcon" alt=""
                       class="w-4 h-4 mr-2.5 flex-shrink-0" />
-                    <span class="truncate">{{ group.text }}</span>
+                    <span :title="group.text" class="truncate">{{ group.text }}</span>
                   </a>
                 </li>
               </ul>

@@ -19,8 +19,8 @@
               <img :src="item.icon || defaultLinkIcon" alt="" class="w-6 h-6" />
             </div>
             <a :href="item.link" target="_blank" class="flex-1 min-w-0 text-sm sm:text-base text-gray-800 dark:text-gray-200">
-              <div class="font-medium truncate">{{ item.text }}</div>
-              <p class="text-gray-500 dark:text-gray-400 text-xs truncate">
+              <div :title="item.text" class="font-medium truncate">{{ item.text }}</div>
+              <p :title="item.description || ''" class="text-gray-500 dark:text-gray-400 text-xs truncate">
                 {{ item.description || 'No description available.' }}
               </p>
             </a>

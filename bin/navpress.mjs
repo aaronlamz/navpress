@@ -192,10 +192,10 @@ program
         return
       }
 
-      // 简易 WebSocket 握手
+      // 简易 WebSocket 握手 — GUID 来自 RFC 6455
       const key = req.headers['sec-websocket-key']
       const accept = crypto.createHash('sha1')
-        .update(key + '258EAFA5-E914-47DA-95CA-5AB5DC11CE56')
+        .update(key + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')
         .digest('base64')
 
       socket.write(
@@ -229,10 +229,16 @@ program
     }
 
     // 监听配置文件变化
+    // 注意：监听父目录而非文件本身，因为多数编辑器（VSCode、Vim 等）使用
+    // 原子写入（写临时文件后 rename），直接监听文件会在首次保存后丢失 inode
     let debounceTimer = null
-    fs.watch(configPath, () => {
+    const configDir = path.dirname(configPath)
+    const configBasename = path.basename(configPath)
+    fs.watch(configDir, (_eventType, filename) => {
+      if (filename !== configBasename) return
       clearTimeout(debounceTimer)
       debounceTimer = setTimeout(async () => {
+        if (!fs.existsSync(configPath)) return
         console.log(`\n  Config file changed. Reloading...`)
         userConfig = await loadUserConfig(configPath)
         console.log(`  ✅ Config reloaded: ${userConfig.title || 'untitled'}`)
