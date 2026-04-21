@@ -117,13 +117,14 @@ navpress build
 
 ### Basic Configuration
 
-| Field         | Type   | Description                         | Default              |
-| ------------- | ------ | ----------------------------------- | -------------------- |
-| `title`       | string | Website title                       | `NavPress`           |
-| `description` | string | Website description                 | `Navigation Website` |
-| `logo`        | string | Logo image path                     | `/images/logo.svg`   |
-| `base`        | string | Base deployment path                | `/`                  |
-| `urlFormat`   | string | URL format: 'query', 'path', 'hash' | `query`              |
+| Field           | Type   | Description                                    | Default              |
+| --------------- | ------ | ---------------------------------------------- | -------------------- |
+| `title`         | string | Website title                                  | `NavPress`           |
+| `description`   | string | Website description                            | `Navigation Website` |
+| `logo`          | string | Logo image path                                | `/images/logo.svg`   |
+| `base`          | string | Base deployment path                           | `/`                  |
+| `urlFormat`     | string | URL format: 'query', 'path', 'hash'            | `query`              |
+| `sidebarExpand` | string | Default expand strategy: 'all', 'first', 'none'| `all`                |
 
 ### Sidebar Configuration
 
@@ -149,6 +150,27 @@ sidebar: [
     ],
   },
 ]
+```
+
+### Sidebar Expand Strategy
+
+Use `sidebarExpand` to control the default open/closed state of top-level sidebar menus:
+
+- **all** (default): all menus expanded
+- **first**: only the first menu expanded, others collapsed
+- **none**: all menus collapsed
+
+Per-item `expanded: true | false` overrides the global strategy.
+
+```javascript
+export default {
+  sidebarExpand: 'first',
+  sidebar: [
+    { text: 'Home', link: '/', items: [] },                              // expanded (first)
+    { text: 'Projects', link: '/project', items: [] },                   // collapsed
+    { text: 'Tools', link: '/tools', expanded: true, items: [] },        // override: expanded
+  ],
+}
 ```
 
 ### URL Format Options

@@ -98,13 +98,14 @@ navpress build
 
 ### 基础配置
 
-| 字段          | 类型   | 说明                              |
-| ------------- | ------ | --------------------------------- |
-| `title`       | string | 网站标题                          |
-| `description` | string | 网站描述                          |
-| `logo`        | string | Logo 图片路径                     |
-| `base`        | string | 部署基础路径，默认 '/'            |
-| `urlFormat`   | string | URL 格式：'query'、'path'、'hash' |
+| 字段            | 类型   | 说明                                                  |
+| --------------- | ------ | ----------------------------------------------------- |
+| `title`         | string | 网站标题                                              |
+| `description`   | string | 网站描述                                              |
+| `logo`          | string | Logo 图片路径                                         |
+| `base`          | string | 部署基础路径，默认 '/'                                |
+| `urlFormat`     | string | URL 格式：'query'、'path'、'hash'                     |
+| `sidebarExpand` | string | 侧边栏默认展开策略：'all'（默认）、'first'、'none'    |
 
 ### 侧边栏配置
 
@@ -130,6 +131,27 @@ sidebar: [
     ],
   },
 ]
+```
+
+### 侧边栏默认展开策略
+
+通过 `sidebarExpand` 控制侧边栏顶级菜单的默认展开状态：
+
+- **all**（默认）：全部展开
+- **first**：仅第一个展开，其余收起
+- **none**：全部收起
+
+单项也可通过 `expanded: true | false` 独立覆盖全局策略。
+
+```javascript
+export default {
+  sidebarExpand: 'first',
+  sidebar: [
+    { text: '常用', link: '/', items: [] },        // 默认展开（受 first 策略）
+    { text: '项目', link: '/project', items: [] }, // 默认收起
+    { text: '工具', link: '/tools', expanded: true, items: [] }, // 单项覆盖：强制展开
+  ],
+}
 ```
 
 ### URL 格式说明

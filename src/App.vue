@@ -11,6 +11,7 @@
         @close-sidebar="toggleSidebar"
         :toggleSidebar="toggleSidebar"
         :urlFormat="$config.urlFormat || 'query'"
+        :sidebarExpand="$config.sidebarExpand || 'all'"
       />
       <div
         class="content-container flex-1 overflow-y-auto p-6"

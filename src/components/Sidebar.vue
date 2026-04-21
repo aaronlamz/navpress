@@ -78,6 +78,11 @@ export default {
       type: String,
       default: 'query',
     },
+    sidebarExpand: {
+      type: String,
+      default: 'all',
+      validator: (v) => ['all', 'first', 'none'].includes(v),
+    },
   },
   data() {
     return {
@@ -97,7 +102,17 @@ export default {
 
     onMounted(() => {
       props.sidebar.forEach((item, index) => {
-        expandedMenu[index] = item.expanded !== undefined ? item.expanded : true;
+        if (item.expanded !== undefined) {
+          expandedMenu[index] = item.expanded;
+          return;
+        }
+        if (props.sidebarExpand === 'none') {
+          expandedMenu[index] = false;
+        } else if (props.sidebarExpand === 'first') {
+          expandedMenu[index] = index === 0;
+        } else {
+          expandedMenu[index] = true;
+        }
       });
 
       updateIsDesktop();
