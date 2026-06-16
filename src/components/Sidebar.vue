@@ -27,7 +27,7 @@
                 @click.stop="goToTopLevel(item.link)">
                 <img :src="item.icon || defaultFolderIcon" alt=""
                   class="w-5 h-5 mr-3 text-blue-600 dark:text-blue-400" />
-                <span :title="item.text"
+                <span v-tooltip="item.text"
                   class="block font-medium py-1 flex-1 truncate"
                   :class="item.link === activePath ? 'text-blue-600 dark:text-blue-300' : 'text-gray-800 dark:text-gray-100'">{{ item.text }}</span>
               </button>
@@ -48,7 +48,7 @@
                       : 'text-gray-600 dark:text-gray-300'">
                     <img :src="group.icon || defaultSubmenuIcon" alt=""
                       class="w-4 h-4 mr-2.5 flex-shrink-0" />
-                    <span :title="group.text" class="truncate">{{ group.text }}</span>
+                    <span v-tooltip="group.text" class="truncate">{{ group.text }}</span>
                   </a>
                 </li>
               </ul>
@@ -101,6 +101,7 @@ export default {
     const route = useRoute();
     const expandedMenu = reactive({});
     const isDesktop = ref(false);
+    const STORAGE_KEY = "navpress:sidebar:expanded";
 
     const updateIsDesktop = () => {
       if (typeof window !== "undefined") {
@@ -125,6 +126,31 @@ export default {
       });
     };
 
+    // 本地缓存：按顶级 link 记忆展开状态（对菜单顺序变化稳健）
+    const saveExpanded = () => {
+      if (typeof localStorage === "undefined") return;
+      try {
+        const map = {};
+        props.sidebar.forEach((item, i) => {
+          if (item.link) map[item.link] = !!expandedMenu[i];
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+      } catch (e) { /* ignore */ }
+    };
+    const restoreExpanded = () => {
+      if (typeof localStorage === "undefined") return;
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const map = JSON.parse(raw);
+        props.sidebar.forEach((item, i) => {
+          if (item.link && map[item.link] !== undefined) {
+            expandedMenu[i] = map[item.link];
+          }
+        });
+      } catch (e) { /* ignore */ }
+    };
+
     // 进入某个模块时，自动展开该模块的菜单
     const expandActiveModule = () => {
       props.sidebar.forEach((item, index) => {
@@ -134,9 +160,24 @@ export default {
       });
     };
 
+    // 把当前选中的菜单/模块滚动到侧边栏可视区
+    const scrollActiveIntoView = () => {
+      if (typeof document === "undefined") return;
+      setTimeout(() => {
+        const el =
+          document.querySelector(".submenu-item-active") ||
+          document.querySelector(".menu-item-active");
+        if (el && el.scrollIntoView) {
+          el.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
+      }, 260); // 等手风琴展开动画(200ms)结束
+    };
+
     onMounted(() => {
       applyDefaultExpand();
-      expandActiveModule();
+      restoreExpanded();      // 覆盖默认：用本地缓存
+      expandActiveModule();   // 当前所在模块始终展开
+      scrollActiveIntoView();
 
       updateIsDesktop();
       if (typeof window !== "undefined") {
@@ -150,9 +191,11 @@ export default {
       }
     });
 
-    // 路由变化（切模块 / 切 section）时，保持当前模块展开
+    // 路由变化（切模块 / 切 section）：展开当前模块、缓存、滚动到选中项
     watch(() => route.fullPath, () => {
       expandActiveModule();
+      saveExpanded();
+      scrollActiveIntoView();
     });
 
     const allExpanded = computed(() => {
@@ -163,7 +206,7 @@ export default {
     const activePath = computed(() => route.path);
     const activeSection = computed(() => getCurrentSection(route, props.urlFormat));
 
-    return { expandedMenu, isDesktop, allExpanded, activePath, activeSection };
+    return { expandedMenu, isDesktop, allExpanded, activePath, activeSection, saveExpanded, scrollActiveIntoView };
   },
   methods: {
     toggleAll() {
@@ -171,9 +214,11 @@ export default {
       this.sidebar.forEach((_, index) => {
         this.expandedMenu[index] = shouldExpand;
       });
+      this.saveExpanded();
     },
     toggleMenu(index) {
       this.expandedMenu[index] = !this.expandedMenu[index];
+      this.saveExpanded();
     },
     handleGroupClick(parentLink, groupLink) {
       // debug removed
@@ -301,9 +346,9 @@ export default {
 /* 当前所在模块：高亮 + 左侧强调条 */
 .menu-item-active {
   position: relative;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%);
-  border-color: rgba(59, 130, 246, 0.28);
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.12);
+  background: rgba(0, 113, 227, 0.1);
+  border-color: rgba(0, 113, 227, 0.28);
+  box-shadow: 0 2px 10px rgba(0, 113, 227, 0.1);
 }
 .menu-item-active::before {
   content: "";
@@ -314,24 +359,27 @@ export default {
   width: 3px;
   height: 60%;
   border-radius: 9999px;
-  background: linear-gradient(180deg, #3b82f6, #6366f1);
+  background: #0071e3;
 }
 .dark .menu-item-active {
-  background: linear-gradient(135deg, rgba(96, 165, 250, 0.16) 0%, rgba(129, 140, 248, 0.12) 100%);
-  border-color: rgba(96, 165, 250, 0.3);
+  background: rgba(41, 151, 255, 0.16);
+  border-color: rgba(41, 151, 255, 0.3);
   box-shadow: none;
+}
+.dark .menu-item-active::before {
+  background: #2997ff;
 }
 
 /* 当前所在 section：高亮子项 */
 .submenu-item-active {
-  background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.25) !important;
-  color: #2563eb;
+  background: rgba(0, 113, 227, 0.1);
+  border-color: rgba(0, 113, 227, 0.22) !important;
+  color: #0071e3;
   font-weight: 600;
 }
 .dark .submenu-item-active {
-  background: rgba(96, 165, 250, 0.16);
-  color: #93c5fd;
+  background: rgba(41, 151, 255, 0.16);
+  color: #2997ff;
 }
 
 .glass-submenu-item {
@@ -339,12 +387,12 @@ export default {
   border: 1px solid transparent;
 }
 .glass-submenu-item:hover {
-  background: #f1f5f9;
-  border-color: rgba(99, 102, 241, 0.12);
+  background: #f5f5f7;
+  border-color: rgba(0, 0, 0, 0.06);
 }
 .dark .glass-submenu-item:hover {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(129, 140, 248, 0.15);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .submenu-item {

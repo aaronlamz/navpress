@@ -6,9 +6,9 @@
     <div class="space-y-8">
       <div v-for="group in items" :key="group.link" :id="getGroupId(group.link)"
         class="group-container glass-card rounded-2xl p-5">
-        <h2 class="text-lg sm:text-2xl font-semibold mb-4 dark:text-gray-200 flex items-center">
-          <span class="mr-2">{{ group.text }}</span>
-          <span class="text-sm text-gray-500 dark:text-gray-400 font-normal">
+        <h2 class="text-lg sm:text-2xl font-semibold mb-4 dark:text-gray-200 flex items-center min-w-0">
+          <span v-tooltip="group.text" class="mr-2 truncate">{{ group.text }}</span>
+          <span class="text-sm text-gray-500 dark:text-gray-400 font-normal flex-shrink-0 whitespace-nowrap">
             ({{ group.items?.length || 0 }} 个项目)
           </span>
         </h2>
@@ -19,8 +19,8 @@
               <img :src="item.icon || defaultLinkIcon" alt="" class="w-6 h-6" />
             </div>
             <a :href="item.link" target="_blank" class="flex-1 min-w-0 text-sm sm:text-base text-gray-800 dark:text-gray-200">
-              <div :title="item.text" class="font-medium truncate">{{ item.text }}</div>
-              <p :title="item.description || ''" class="text-gray-500 dark:text-gray-400 text-xs truncate">
+              <div v-tooltip="item.text" class="font-medium truncate">{{ item.text }}</div>
+              <p v-tooltip="item.description || ''" class="text-gray-500 dark:text-gray-400 text-xs truncate">
                 {{ item.description || 'No description available.' }}
               </p>
             </a>
@@ -275,45 +275,45 @@ export default {
 }
 .glass-link-card:hover {
   background: #ffffff;
-  border-color: rgba(99, 102, 241, 0.2);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  border-color: rgba(0, 113, 227, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 .dark .glass-link-card {
   background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 .dark .glass-link-card:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(129, 140, 248, 0.2);
-  box-shadow: 0 4px 12px rgba(129, 140, 248, 0.08);
+  border-color: rgba(41, 151, 255, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .glass-fab {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  color: #3b82f6;
+  color: #0071e3;
 }
 .glass-fab:hover {
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.15);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 24px rgba(0, 113, 227, 0.18);
 }
 .dark .glass-fab {
-  background: rgba(30, 41, 59, 0.7);
-  border-color: rgba(255, 255, 255, 0.08);
-  color: #93c5fd;
+  background: rgba(28, 28, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #2997ff;
 }
 
 .icon-container {
-  background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
-  border: 1px solid rgba(99, 102, 241, 0.08);
+  background: #f5f5f7;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 .dark .icon-container {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
-  border-color: rgba(139, 92, 246, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .group-container {
@@ -324,19 +324,19 @@ export default {
 /* 高亮效果 */
 .highlight-anchor {
   animation: highlightFade 0.8s ease-in-out;
-  border: 2px solid rgba(59, 130, 246, 0.35);
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+  border: 2px solid rgba(0, 113, 227, 0.35);
+  box-shadow: 0 0 12px rgba(0, 113, 227, 0.22);
 }
 
 @keyframes highlightFade {
   0% {
-    border-color: rgba(59, 130, 246, 0.6);
-    box-shadow: 0 0 16px rgba(59, 130, 246, 0.35);
+    border-color: rgba(0, 113, 227, 0.6);
+    box-shadow: 0 0 16px rgba(0, 113, 227, 0.32);
   }
 
   100% {
-    border-color: rgba(59, 130, 246, 0.35);
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+    border-color: rgba(0, 113, 227, 0.35);
+    box-shadow: 0 0 12px rgba(0, 113, 227, 0.22);
   }
 }
 

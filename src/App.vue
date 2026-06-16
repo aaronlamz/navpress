@@ -74,17 +74,11 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f0f2f5;
-  background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 100%, rgba(59, 130, 246, 0.08) 0%, transparent 60%);
+  background: #f5f5f7;
 }
 
 .dark #app {
-  background: #0f172a;
-  background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(124, 58, 237, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 100%, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
+  background: #000000;
 }
 
 .navbar {

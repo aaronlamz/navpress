@@ -1,6 +1,7 @@
 import { createSSRApp, createApp as createCSRApp, reactive } from 'vue'
 import App from './App.vue'
 import { createRouterInstance } from './router'
+import tooltip from './directives/tooltip'
 import './assets/style/index.css'
 
 // 响应式配置对象（启动时在客户端拉取最新配置，避免刷新后回退旧值）
@@ -50,6 +51,7 @@ export function createApp() {
   const app = createSSRApp(App)
   const router = createRouterInstance(userConfig)
   app.use(router)
+  app.directive('tooltip', tooltip)
   // 将配置挂载到全局
   app.config.globalProperties.$config = userConfig
   // 提供配置给组件使用 inject
@@ -76,6 +78,7 @@ if (typeof window !== 'undefined') {
     app = createCSRApp(App)
     router = createRouterInstance(userConfig)
     app.use(router)
+    app.directive('tooltip', tooltip)
     app.config.globalProperties.$config = userConfig
     app.provide('$config', userConfig)
     app.mount('#app')

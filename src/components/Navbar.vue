@@ -1,13 +1,13 @@
 <template>
   <nav class="glass-nav fixed w-full z-50">
     <div class="container mx-auto flex justify-between items-center py-3 px-6">
-      <!-- Logo 和标题 -->
-      <div class="flex items-center">
+      <!-- Logo 和标题（点击回首页） -->
+      <router-link to="/" class="flex items-center group" aria-label="返回首页">
         <img :src="$config.logo" alt="Logo" class="h-10 w-auto mr-3" />
-        <span class="text-xl font-semibold text-gray-900 dark:text-white">
+        <span class="text-xl font-semibold text-gray-900 dark:text-white group-hover:opacity-70 transition-opacity">
           {{ $config.title }}
         </span>
-      </div>
+      </router-link>
 
       <!-- 移动端菜单按钮 -->
       <button
@@ -283,16 +283,16 @@ export default {
 
 <style scoped>
 .glass-nav {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
+  background: rgba(251, 251, 253, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 }
 .dark .glass-nav {
-  background: rgba(17, 24, 39, 0.75);
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
 }
 
 /* 顶栏图标按钮 + 悬停提示 */
@@ -321,8 +321,8 @@ export default {
   font-size: 12px;
   line-height: 1;
   white-space: nowrap;
-  color: #fff;
-  background: rgba(17, 24, 39, 0.92);
+  color: #f5f5f7;
+  background: rgba(29, 29, 31, 0.94);
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
   opacity: 0;
@@ -337,18 +337,18 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   border: 4px solid transparent;
-  border-bottom-color: rgba(17, 24, 39, 0.92);
+  border-bottom-color: rgba(29, 29, 31, 0.94);
 }
 .nav-icon-btn:hover .nav-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
 .dark .nav-tooltip {
-  background: rgba(241, 245, 249, 0.95);
-  color: #0f172a;
+  background: rgba(245, 245, 247, 0.96);
+  color: #1d1d1f;
 }
 .dark .nav-tooltip::after {
-  border-bottom-color: rgba(241, 245, 249, 0.95);
+  border-bottom-color: rgba(245, 245, 247, 0.96);
 }
 
 .glass-input {
@@ -356,18 +356,18 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 .glass-input:focus-within {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 113, 227, 0.5);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
 }
 .dark .glass-input {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 .dark .glass-input:focus-within {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(96, 165, 250, 0.4);
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(41, 151, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.12);
 }
 
 .glass-dropdown {
