@@ -73,15 +73,18 @@
             </div>
           </div>
         </div>
-        <!-- GitHub 链接 -->
+        <!-- GitHub / 源代码 -->
         <a
           v-if="$config.github"
           :href="$config.github"
           target="_blank"
           rel="noopener noreferrer"
+          :title="$config.githubText || $config.github"
+          :aria-label="$config.githubText || 'GitHub'"
+          class="nav-icon-btn group"
         >
           <svg
-            class="w-6 h-6 text-gray-900 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+            class="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"
             fill="currentColor"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
@@ -90,14 +93,18 @@
               d="M12 0a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6V21.5c-3.3.7-4-1.6-4-1.6-.5-1.4-1.2-1.8-1.2-1.8-.9-.7.1-.7.1-.7 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.7.3-1.1.5-1.4-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.3 11.3 0 016 0c2.2-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.3.3.6.8.6 1.6v2.4c0 .4.2.7.8.6A12 12 0 0012 0"
             ></path>
           </svg>
+          <span class="nav-tooltip">{{ $config.githubText || 'GitHub' }}</span>
         </a>
         <!-- 切换主题按钮 -->
         <button
           @click="toggleDarkMode"
-          class="text-gray-900 dark:text-gray-300"
+          :title="isDarkMode ? '切换到浅色' : '切换到深色'"
+          aria-label="切换主题"
+          class="nav-icon-btn group"
         >
           <span v-if="isDarkMode">🌞</span>
           <span v-else>🌙</span>
+          <span class="nav-tooltip">{{ isDarkMode ? '浅色模式' : '深色模式' }}</span>
         </button>
       </div>
     </div>
@@ -286,6 +293,62 @@ export default {
   background: rgba(17, 24, 39, 0.75);
   border-bottom-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* 顶栏图标按钮 + 悬停提示 */
+.nav-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease;
+}
+.nav-icon-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.dark .nav-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.nav-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(17, 24, 39, 0.92);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 60;
+}
+.nav-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-bottom-color: rgba(17, 24, 39, 0.92);
+}
+.nav-icon-btn:hover .nav-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.dark .nav-tooltip {
+  background: rgba(241, 245, 249, 0.95);
+  color: #0f172a;
+}
+.dark .nav-tooltip::after {
+  border-bottom-color: rgba(241, 245, 249, 0.95);
 }
 
 .glass-input {

@@ -21,12 +21,15 @@
         <ul class="space-y-2">
           <li v-for="(item, index) in sidebar" :key="item.link">
             <div
-              class="flex items-center justify-between rounded-2xl px-3 py-2.5 glass-menu-item transition-all duration-200">
+              class="flex items-center justify-between rounded-2xl px-3 py-2.5 glass-menu-item transition-all duration-200"
+              :class="{ 'menu-item-active': item.link === activePath }">
               <button type="button" class="flex items-center flex-1 min-w-0 text-left focus:outline-none"
                 @click.stop="goToTopLevel(item.link)">
                 <img :src="item.icon || defaultFolderIcon" alt=""
                   class="w-5 h-5 mr-3 text-blue-600 dark:text-blue-400" />
-                <span :title="item.text" class="block text-gray-800 dark:text-gray-100 font-medium py-1 flex-1 truncate">{{ item.text }}</span>
+                <span :title="item.text"
+                  class="block font-medium py-1 flex-1 truncate"
+                  :class="item.link === activePath ? 'text-blue-600 dark:text-blue-300' : 'text-gray-800 dark:text-gray-100'">{{ item.text }}</span>
               </button>
               <button type="button"
                 class="ml-2 px-2 py-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 focus:outline-none transition-colors"
@@ -39,7 +42,10 @@
               <ul v-show="expandedMenu[index]" class="ml-4 mt-2 space-y-1.5 submenu-list smooth">
                 <li v-for="group in item.items" :key="group.link">
                   <a @click="handleGroupClick(item.link, group.link)"
-                    class="submenu-item block text-gray-600 dark:text-gray-300 px-3 py-2 rounded-xl flex items-center cursor-pointer glass-submenu-item transition-all duration-200">
+                    class="submenu-item block px-3 py-2 rounded-xl flex items-center cursor-pointer glass-submenu-item transition-all duration-200"
+                    :class="item.link === activePath && group.link === '#' + activeSection
+                      ? 'submenu-item-active'
+                      : 'text-gray-600 dark:text-gray-300'">
                     <img :src="group.icon || defaultSubmenuIcon" alt=""
                       class="w-4 h-4 mr-2.5 flex-shrink-0" />
                     <span :title="group.text" class="truncate">{{ group.text }}</span>
@@ -55,8 +61,9 @@
 </template>
 
 <script>
-import { reactive, ref, computed, onMounted, onUnmounted } from "vue";
-import { generateNavUrl } from "../utils/urlHelper.js";
+import { reactive, ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { useRoute } from "vue-router";
+import { generateNavUrl, getCurrentSection } from "../utils/urlHelper.js";
 import defaultFolderIcon from "../assets/icons/default-folder.svg";
 import defaultSubmenuIcon from "../assets/icons/default-submenu.svg";
 
@@ -91,6 +98,7 @@ export default {
     };
   },
   setup(props) {
+    const route = useRoute();
     const expandedMenu = reactive({});
     const isDesktop = ref(false);
 
@@ -100,7 +108,8 @@ export default {
       }
     };
 
-    onMounted(() => {
+    // 应用配置里的默认展开策略
+    const applyDefaultExpand = () => {
       props.sidebar.forEach((item, index) => {
         if (item.expanded !== undefined) {
           expandedMenu[index] = item.expanded;
@@ -114,6 +123,20 @@ export default {
           expandedMenu[index] = true;
         }
       });
+    };
+
+    // 进入某个模块时，自动展开该模块的菜单
+    const expandActiveModule = () => {
+      props.sidebar.forEach((item, index) => {
+        if (item.link && item.link === route.path) {
+          expandedMenu[index] = true;
+        }
+      });
+    };
+
+    onMounted(() => {
+      applyDefaultExpand();
+      expandActiveModule();
 
       updateIsDesktop();
       if (typeof window !== "undefined") {
@@ -127,11 +150,20 @@ export default {
       }
     });
 
+    // 路由变化（切模块 / 切 section）时，保持当前模块展开
+    watch(() => route.fullPath, () => {
+      expandActiveModule();
+    });
+
     const allExpanded = computed(() => {
       return props.sidebar.every((_, index) => expandedMenu[index]);
     });
 
-    return { expandedMenu, isDesktop, allExpanded };
+    // 当前所在模块路径 & section，用于高亮
+    const activePath = computed(() => route.path);
+    const activeSection = computed(() => getCurrentSection(route, props.urlFormat));
+
+    return { expandedMenu, isDesktop, allExpanded, activePath, activeSection };
   },
   methods: {
     toggleAll() {
@@ -264,6 +296,42 @@ export default {
 }
 .dark .glass-menu-item:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* 当前所在模块：高亮 + 左侧强调条 */
+.menu-item-active {
+  position: relative;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%);
+  border-color: rgba(59, 130, 246, 0.28);
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.12);
+}
+.menu-item-active::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #3b82f6, #6366f1);
+}
+.dark .menu-item-active {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.16) 0%, rgba(129, 140, 248, 0.12) 100%);
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: none;
+}
+
+/* 当前所在 section：高亮子项 */
+.submenu-item-active {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.25) !important;
+  color: #2563eb;
+  font-weight: 600;
+}
+.dark .submenu-item-active {
+  background: rgba(96, 165, 250, 0.16);
+  color: #93c5fd;
 }
 
 .glass-submenu-item {
