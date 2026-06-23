@@ -428,7 +428,18 @@ export default {
 
 @media (max-width: 640px) {
   aside {
+    /* 父级 .sidebar-container 因 transform 成为定位包含块，
+       这里铺满它即可（它已位于 navbar 之下且高度正确） */
     width: 100%;
+    top: 0;
+    left: 0;
+    height: 100%;
+    max-height: 100%;
+    /* 菜单项过多时自身可滚动，避免无法选中底部项 */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* 滚到边界时不把滚动“穿透”给下层内容区 */
+    overscroll-behavior: contain;
   }
 }
 
