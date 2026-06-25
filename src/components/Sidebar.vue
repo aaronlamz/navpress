@@ -88,7 +88,8 @@ export default {
     sidebarExpand: {
       type: String,
       default: 'all',
-      validator: (v) => ['all', 'first', 'none'].includes(v),
+      // active: URL 权威 + 单开 —— 仅展开当前路由对应模块，无匹配则展开第一个
+      validator: (v) => ['all', 'first', 'none', 'active'].includes(v),
     },
   },
   data() {
@@ -160,6 +161,30 @@ export default {
       });
     };
 
+    // 找到当前路由对应的顶级模块下标（兼容 query 与 path 两种 urlFormat）
+    const findActiveIndex = () => {
+      let idx = props.sidebar.findIndex(
+        (item) => item.link && item.link === route.path
+      );
+      if (idx === -1) {
+        // path 格式：/learn/group1 归属 /learn
+        idx = props.sidebar.findIndex(
+          (item) =>
+            item.link && item.link !== "/" && route.path.startsWith(item.link + "/")
+        );
+      }
+      return idx;
+    };
+
+    // active 模式：URL 权威 + 单开 —— 只展开当前模块，无匹配则展开第一个，其余收起
+    const applyActiveOnly = () => {
+      const active = findActiveIndex();
+      const target = active === -1 ? 0 : active;
+      props.sidebar.forEach((_, i) => {
+        expandedMenu[i] = i === target;
+      });
+    };
+
     // 把当前选中的菜单/模块滚动到侧边栏可视区
     const scrollActiveIntoView = () => {
       if (typeof document === "undefined") return;
@@ -174,9 +199,14 @@ export default {
     };
 
     onMounted(() => {
-      applyDefaultExpand();
-      restoreExpanded();      // 覆盖默认：用本地缓存
-      expandActiveModule();   // 当前所在模块始终展开
+      if (props.sidebarExpand === 'active') {
+        // URL 权威 + 单开：不使用本地缓存，完全由当前路由决定
+        applyActiveOnly();
+      } else {
+        applyDefaultExpand();
+        restoreExpanded();      // 覆盖默认：用本地缓存
+        expandActiveModule();   // 当前所在模块始终展开
+      }
       scrollActiveIntoView();
 
       updateIsDesktop();
@@ -193,8 +223,13 @@ export default {
 
     // 路由变化（切模块 / 切 section）：展开当前模块、缓存、滚动到选中项
     watch(() => route.fullPath, () => {
-      expandActiveModule();
-      saveExpanded();
+      if (props.sidebarExpand === 'active') {
+        // 单开模式：导航时以 URL 为准，重置为仅当前模块
+        applyActiveOnly();
+      } else {
+        expandActiveModule();
+        saveExpanded();
+      }
       scrollActiveIntoView();
     });
 

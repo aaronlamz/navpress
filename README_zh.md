@@ -105,7 +105,7 @@ navpress build
 | `logo`          | string | Logo 图片路径                                         |
 | `base`          | string | 部署基础路径，默认 '/'                                |
 | `urlFormat`     | string | URL 格式：'query'、'path'、'hash'                     |
-| `sidebarExpand` | string | 侧边栏默认展开策略：'all'（默认）、'first'、'none'    |
+| `sidebarExpand` | string | 侧边栏默认展开策略：'all'（默认）、'first'、'none'、'active' |
 
 ### 侧边栏配置
 
@@ -140,8 +140,9 @@ sidebar: [
 - **all**（默认）：全部展开
 - **first**：仅第一个展开，其余收起
 - **none**：全部收起
+- **active**：URL 权威 + 单开 —— 仅展开当前路由对应的模块，无匹配时展开第一个，其余收起；导航时始终以 URL 为准（不受展开状态本地缓存影响），用户手动点开仍可临时多开
 
-单项也可通过 `expanded: true | false` 独立覆盖全局策略。
+单项也可通过 `expanded: true | false` 独立覆盖全局策略（`active` 模式下由路由统一接管，单项 `expanded` 不生效）。
 
 ```javascript
 export default {

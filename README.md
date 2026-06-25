@@ -124,7 +124,7 @@ navpress build
 | `logo`          | string | Logo image path                                | `/images/logo.svg`   |
 | `base`          | string | Base deployment path                           | `/`                  |
 | `urlFormat`     | string | URL format: 'query', 'path', 'hash'            | `query`              |
-| `sidebarExpand` | string | Default expand strategy: 'all', 'first', 'none'| `all`                |
+| `sidebarExpand` | string | Default expand strategy: 'all', 'first', 'none', 'active'| `all`                |
 
 ### Sidebar Configuration
 
@@ -159,8 +159,9 @@ Use `sidebarExpand` to control the default open/closed state of top-level sideba
 - **all** (default): all menus expanded
 - **first**: only the first menu expanded, others collapsed
 - **none**: all menus collapsed
+- **active**: URL-authoritative single-open — expands only the module matching the current route (falls back to the first when none matches), collapsing the rest. Navigation always follows the URL (ignores the local expand-state cache); manual clicks can still open multiple temporarily.
 
-Per-item `expanded: true | false` overrides the global strategy.
+Per-item `expanded: true | false` overrides the global strategy (ignored in `active` mode, where the route takes over).
 
 ```javascript
 export default {
