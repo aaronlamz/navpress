@@ -3,6 +3,119 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===================== 设计令牌 / 主题系统 =====================
+ * 颜色与玻璃参数统一抽到 CSS 变量，组件只引用 var(--np-*)。
+ * 主题切换：在 <html> 上设置 data-theme="<preset>"（明/暗仍由 .dark 类控制，二者正交）。
+ * 强调色可由配置 accent 运行时覆盖 --np-accent / --np-accent-rgb。
+ * 预设：apple(默认) | liquid-glass
+ * ============================================================ */
+:root {
+  /* 强调色 */
+  --np-accent: #0071e3;
+  --np-accent-rgb: 0, 113, 227;
+
+  /* 应用底色 */
+  --np-bg: #f5f5f7;
+
+  /* 玻璃可调参数 */
+  --np-glass-blur: 20px;
+  --np-glass-saturate: 180%;
+
+  /* 玻璃表面 */
+  --np-glass-nav-bg: rgba(251, 251, 253, 0.8);
+  --np-glass-panel-bg: rgba(255, 255, 255, 0.72);
+  --np-glass-dropdown-bg: rgba(255, 255, 255, 0.85);
+  --np-glass-input-bg: rgba(0, 0, 0, 0.04);
+  --np-glass-input-focus-bg: rgba(255, 255, 255, 0.9);
+  --np-glass-border: rgba(0, 0, 0, 0.06);
+  --np-glass-dropdown-border: rgba(255, 255, 255, 0.4);
+  --np-glass-panel-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --np-glass-dropdown-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  /* 液态玻璃质感（apple 预设下保持中性，等价旧观感） */
+  --np-glass-highlight: transparent; /* 顶部镜面高光渐变 */
+  --np-glass-edge: transparent;      /* 内描边亮线（inset 顶部 hairline） */
+
+  /* 菜单项 */
+  --np-item-bg: #ffffff;
+  --np-item-border: rgba(0, 0, 0, 0.05);
+  --np-item-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  --np-item-hover-bg: #ffffff;
+  --np-subitem-hover-bg: #f5f5f7;
+  --np-subitem-hover-border: rgba(0, 0, 0, 0.06);
+
+  /* Tooltip */
+  --np-tooltip-bg: rgba(29, 29, 31, 0.94);
+  --np-tooltip-color: #f5f5f7;
+}
+
+.dark {
+  --np-accent: #2997ff;
+  --np-accent-rgb: 41, 151, 255;
+  --np-bg: #000000;
+
+  --np-glass-nav-bg: rgba(0, 0, 0, 0.8);
+  --np-glass-panel-bg: rgba(15, 23, 42, 0.72);
+  --np-glass-dropdown-bg: rgba(30, 41, 59, 0.88);
+  --np-glass-input-bg: rgba(255, 255, 255, 0.08);
+  --np-glass-input-focus-bg: rgba(255, 255, 255, 0.12);
+  --np-glass-border: rgba(255, 255, 255, 0.1);
+  --np-glass-dropdown-border: rgba(255, 255, 255, 0.08);
+  --np-glass-panel-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  --np-glass-dropdown-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  --np-glass-highlight: transparent;
+  --np-glass-edge: transparent;
+
+  --np-item-bg: rgba(255, 255, 255, 0.06);
+  --np-item-border: rgba(255, 255, 255, 0.06);
+  --np-item-shadow: none;
+  --np-item-hover-bg: rgba(255, 255, 255, 0.1);
+  --np-subitem-hover-bg: rgba(255, 255, 255, 0.06);
+  --np-subitem-hover-border: rgba(255, 255, 255, 0.08);
+
+  --np-tooltip-bg: rgba(245, 245, 247, 0.96);
+  --np-tooltip-color: #1d1d1f;
+}
+
+/* ---------- 预设：液态玻璃（更通透 + 高光 + 亮边） ---------- */
+[data-theme="liquid-glass"] {
+  --np-glass-blur: 28px;
+  --np-glass-saturate: 200%;
+  --np-glass-nav-bg: rgba(255, 255, 255, 0.5);
+  --np-glass-panel-bg: rgba(255, 255, 255, 0.42);
+  --np-glass-dropdown-bg: rgba(255, 255, 255, 0.55);
+  --np-glass-input-bg: rgba(255, 255, 255, 0.35);
+  --np-glass-border: rgba(255, 255, 255, 0.5);
+  --np-glass-dropdown-border: rgba(255, 255, 255, 0.6);
+  --np-glass-input-focus-bg: rgba(255, 255, 255, 0.6);
+  --np-glass-panel-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --np-glass-highlight: rgba(255, 255, 255, 0.7);
+  --np-glass-edge: rgba(255, 255, 255, 0.9);
+  --np-item-bg: rgba(255, 255, 255, 0.55);
+  --np-item-border: rgba(255, 255, 255, 0.6);
+  --np-item-hover-bg: rgba(255, 255, 255, 0.78);
+  --np-subitem-hover-bg: rgba(255, 255, 255, 0.6);
+  --np-subitem-hover-border: rgba(255, 255, 255, 0.7);
+}
+[data-theme="liquid-glass"].dark {
+  --np-glass-nav-bg: rgba(20, 22, 28, 0.5);
+  --np-glass-panel-bg: rgba(20, 22, 28, 0.42);
+  --np-glass-dropdown-bg: rgba(28, 30, 38, 0.6);
+  --np-glass-input-bg: rgba(255, 255, 255, 0.1);
+  --np-glass-border: rgba(255, 255, 255, 0.14);
+  --np-glass-dropdown-border: rgba(255, 255, 255, 0.16);
+  --np-glass-input-focus-bg: rgba(255, 255, 255, 0.16);
+  --np-glass-panel-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --np-glass-highlight: rgba(255, 255, 255, 0.16);
+  --np-glass-edge: rgba(255, 255, 255, 0.22);
+  --np-item-bg: rgba(255, 255, 255, 0.08);
+  --np-item-border: rgba(255, 255, 255, 0.12);
+  --np-item-hover-bg: rgba(255, 255, 255, 0.14);
+  --np-subitem-hover-bg: rgba(255, 255, 255, 0.1);
+  --np-subitem-hover-border: rgba(255, 255, 255, 0.14);
+}
+
 /* Apple 风格字体 */
 html,
 body,
@@ -26,8 +139,8 @@ html {
   max-width: 320px;
   font-size: 12px;
   line-height: 1.4;
-  color: #f5f5f7;
-  background: rgba(29, 29, 31, 0.94);
+  color: var(--np-tooltip-color);
+  background: var(--np-tooltip-bg);
   border-radius: 8px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
   pointer-events: none;
@@ -43,10 +156,7 @@ html {
   opacity: 1;
   transform: translateY(0);
 }
-.dark .np-tooltip {
-  background: rgba(245, 245, 247, 0.96);
-  color: #1d1d1f;
-}
+/* 明/暗 tooltip 颜色已由 --np-tooltip-* 令牌驱动（见 .dark 块） */
 
 /* 细滚动条 */
 * {

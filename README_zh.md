@@ -106,6 +106,23 @@ navpress build
 | `base`          | string | 部署基础路径，默认 '/'                                |
 | `urlFormat`     | string | URL 格式：'query'、'path'、'hash'                     |
 | `sidebarExpand` | string | 侧边栏默认展开策略：'all'（默认）、'first'、'none'、'active' |
+| `theme`         | string | 主题预设：'apple'（默认）、'liquid-glass'             |
+| `accent`        | string | 强调色（hex，如 `#0071e3`）                           |
+
+### 主题与强调色
+
+全站颜色与玻璃参数已用 CSS 变量令牌化，外观可配置：
+
+- **theme**：`'apple'`（默认磨砂玻璃）或 `'liquid-glass'`（更通透，带镜面高光与亮边的 iOS 液态玻璃风格皮肤）。两种主题下均支持明/暗模式。
+- **accent**：任意 hex 颜色，运行时覆盖侧边栏、搜索框、tooltip 等处的高亮/强调色。
+
+```javascript
+export default {
+  theme: 'liquid-glass',
+  accent: '#ff375f',
+  // ...
+}
+```
 
 ### 侧边栏配置
 

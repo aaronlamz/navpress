@@ -283,16 +283,11 @@ export default {
 
 <style scoped>
 .glass-nav {
-  background: rgba(251, 251, 253, 0.8);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: none;
-}
-.dark .glass-nav {
-  background: rgba(0, 0, 0, 0.8);
-  border-bottom-color: rgba(255, 255, 255, 0.1);
-  box-shadow: none;
+  background: var(--np-glass-nav-bg);
+  backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  border-bottom: 1px solid var(--np-glass-border);
+  box-shadow: inset 0 -1px 0 var(--np-glass-edge);
 }
 
 /* 顶栏图标按钮 + 悬停提示 */
@@ -321,8 +316,8 @@ export default {
   font-size: 12px;
   line-height: 1;
   white-space: nowrap;
-  color: #f5f5f7;
-  background: rgba(29, 29, 31, 0.94);
+  color: var(--np-tooltip-color);
+  background: var(--np-tooltip-bg);
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
   opacity: 0;
@@ -337,49 +332,28 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   border: 4px solid transparent;
-  border-bottom-color: rgba(29, 29, 31, 0.94);
+  border-bottom-color: var(--np-tooltip-bg);
 }
 .nav-icon-btn:hover .nav-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-.dark .nav-tooltip {
-  background: rgba(245, 245, 247, 0.96);
-  color: #1d1d1f;
-}
-.dark .nav-tooltip::after {
-  border-bottom-color: rgba(245, 245, 247, 0.96);
-}
 
 .glass-input {
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--np-glass-input-bg);
+  border: 1px solid var(--np-glass-border);
 }
 .glass-input:focus-within {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(0, 113, 227, 0.5);
-  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
-}
-.dark .glass-input {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-.dark .glass-input:focus-within {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(41, 151, 255, 0.5);
-  box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.12);
+  background: var(--np-glass-input-focus-bg);
+  border-color: rgba(var(--np-accent-rgb), 0.5);
+  box-shadow: 0 0 0 3px rgba(var(--np-accent-rgb), 0.12);
 }
 
 .glass-dropdown {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-.dark .glass-dropdown {
-  background: rgba(30, 41, 59, 0.88);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: var(--np-glass-dropdown-bg);
+  backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  border: 1px solid var(--np-glass-dropdown-border);
+  box-shadow: var(--np-glass-dropdown-shadow), inset 0 1px 0 var(--np-glass-edge);
 }
 </style>

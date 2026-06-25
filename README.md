@@ -125,6 +125,23 @@ navpress build
 | `base`          | string | Base deployment path                           | `/`                  |
 | `urlFormat`     | string | URL format: 'query', 'path', 'hash'            | `query`              |
 | `sidebarExpand` | string | Default expand strategy: 'all', 'first', 'none', 'active'| `all`                |
+| `theme`         | string | Theme preset: 'apple', 'liquid-glass'          | `apple`              |
+| `accent`        | string | Accent color (hex, e.g. `#0071e3`)             | theme default        |
+
+### Theme & Accent
+
+NavPress is fully tokenized with CSS variables, so look-and-feel is configurable:
+
+- **theme**: `'apple'` (default frosted glass) or `'liquid-glass'` (more translucent, with specular highlight and bright edge — an iOS Liquid Glass-style skin). Light/dark mode works under either theme.
+- **accent**: any hex color; overrides the active/highlight color across the sidebar, search box and tooltips at runtime.
+
+```javascript
+export default {
+  theme: 'liquid-glass',
+  accent: '#ff375f',
+  // ...
+}
+```
 
 ### Sidebar Configuration
 

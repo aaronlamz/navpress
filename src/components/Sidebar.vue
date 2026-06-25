@@ -348,42 +348,32 @@ export default {
 
 <style scoped>
 .glass-sidebar {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background:
+    linear-gradient(180deg, var(--np-glass-highlight), transparent 42%),
+    var(--np-glass-panel-bg);
+  backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  -webkit-backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  border: 1px solid var(--np-glass-border);
   border-radius: 1rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-}
-.dark .glass-sidebar {
-  background: rgba(15, 23, 42, 0.72);
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--np-glass-panel-shadow), inset 0 1px 0 var(--np-glass-edge);
 }
 
 .glass-menu-item {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  background: var(--np-item-bg);
+  border: 1px solid var(--np-item-border);
+  box-shadow: var(--np-item-shadow);
 }
 .glass-menu-item:hover {
+  background: var(--np-item-hover-bg);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-.dark .glass-menu-item {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: none;
-}
-.dark .glass-menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
 }
 
 /* 当前所在模块：高亮 + 左侧强调条 */
 .menu-item-active {
   position: relative;
-  background: rgba(0, 113, 227, 0.1);
-  border-color: rgba(0, 113, 227, 0.28);
-  box-shadow: 0 2px 10px rgba(0, 113, 227, 0.1);
+  background: rgba(var(--np-accent-rgb), 0.1);
+  border-color: rgba(var(--np-accent-rgb), 0.28);
+  box-shadow: 0 2px 10px rgba(var(--np-accent-rgb), 0.1);
 }
 .menu-item-active::before {
   content: "";
@@ -394,27 +384,15 @@ export default {
   width: 3px;
   height: 60%;
   border-radius: 9999px;
-  background: #0071e3;
-}
-.dark .menu-item-active {
-  background: rgba(41, 151, 255, 0.16);
-  border-color: rgba(41, 151, 255, 0.3);
-  box-shadow: none;
-}
-.dark .menu-item-active::before {
-  background: #2997ff;
+  background: var(--np-accent);
 }
 
 /* 当前所在 section：高亮子项 */
 .submenu-item-active {
-  background: rgba(0, 113, 227, 0.1);
-  border-color: rgba(0, 113, 227, 0.22) !important;
-  color: #0071e3;
+  background: rgba(var(--np-accent-rgb), 0.1);
+  border-color: rgba(var(--np-accent-rgb), 0.22) !important;
+  color: var(--np-accent);
   font-weight: 600;
-}
-.dark .submenu-item-active {
-  background: rgba(41, 151, 255, 0.16);
-  color: #2997ff;
 }
 
 .glass-submenu-item {
@@ -422,12 +400,8 @@ export default {
   border: 1px solid transparent;
 }
 .glass-submenu-item:hover {
-  background: #f5f5f7;
-  border-color: rgba(0, 0, 0, 0.06);
-}
-.dark .glass-submenu-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: var(--np-subitem-hover-bg);
+  border-color: var(--np-subitem-hover-border);
 }
 
 .submenu-item {
