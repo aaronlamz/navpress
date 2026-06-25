@@ -259,61 +259,42 @@ export default {
 
 <style scoped>
 .glass-card {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
-}
-.dark .glass-card {
-  background: #1e293b;
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.25);
+  background: var(--np-glass-noise), var(--np-card-bg);
+  backdrop-filter: blur(var(--np-card-blur)) var(--np-glass-fx);
+  -webkit-backdrop-filter: blur(var(--np-card-blur)) var(--np-glass-fx);
+  border: 1px solid var(--np-card-border);
+  box-shadow: var(--np-card-shadow);
 }
 
 .glass-link-card {
-  background: #f8fafc;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  background: var(--np-linkcard-bg);
+  backdrop-filter: blur(var(--np-card-blur));
+  -webkit-backdrop-filter: blur(var(--np-card-blur));
+  border: 1px solid var(--np-linkcard-border);
 }
 .glass-link-card:hover {
-  background: #ffffff;
-  border-color: rgba(0, 113, 227, 0.35);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  background: var(--np-linkcard-hover-bg);
+  border-color: rgba(var(--np-accent-rgb), 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
-}
-.dark .glass-link-card {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.06);
-}
-.dark .glass-link-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(41, 151, 255, 0.4);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .glass-fab {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  color: #0071e3;
+  background: var(--np-fab-bg);
+  backdrop-filter: blur(16px) var(--np-glass-fx);
+  -webkit-backdrop-filter: blur(16px) var(--np-glass-fx);
+  border: 1px solid var(--np-glass-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 var(--np-glass-edge);
+  color: var(--np-accent);
 }
 .glass-fab:hover {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 6px 24px rgba(0, 113, 227, 0.18);
-}
-.dark .glass-fab {
-  background: rgba(28, 28, 30, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #2997ff;
+  background: var(--np-fab-hover-bg);
+  box-shadow: 0 6px 24px rgba(var(--np-accent-rgb), 0.18);
 }
 
 .icon-container {
-  background: #f5f5f7;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-.dark .icon-container {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--np-icon-bg);
+  border: 1px solid var(--np-glass-border);
 }
 
 .group-container {

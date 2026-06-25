@@ -349,10 +349,11 @@ export default {
 <style scoped>
 .glass-sidebar {
   background:
+    var(--np-glass-noise),
     linear-gradient(180deg, var(--np-glass-highlight), transparent 42%),
     var(--np-glass-panel-bg);
-  backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  backdrop-filter: blur(var(--np-glass-blur)) var(--np-glass-fx);
+  -webkit-backdrop-filter: blur(var(--np-glass-blur)) var(--np-glass-fx);
   border: 1px solid var(--np-glass-border);
   border-radius: 1rem;
   box-shadow: var(--np-glass-panel-shadow), inset 0 1px 0 var(--np-glass-edge);
@@ -371,9 +372,9 @@ export default {
 /* 当前所在模块：高亮 + 左侧强调条 */
 .menu-item-active {
   position: relative;
-  background: rgba(var(--np-accent-rgb), 0.1);
-  border-color: rgba(var(--np-accent-rgb), 0.28);
-  box-shadow: 0 2px 10px rgba(var(--np-accent-rgb), 0.1);
+  background: var(--np-active-bg);
+  border-color: var(--np-active-border);
+  box-shadow: var(--np-active-shadow);
 }
 .menu-item-active::before {
   content: "";
@@ -381,16 +382,16 @@ export default {
   left: -4px;
   top: 50%;
   transform: translateY(-50%);
-  width: 3px;
-  height: 60%;
+  width: var(--np-active-bar-w);
+  height: 62%;
   border-radius: 9999px;
   background: var(--np-accent);
 }
 
 /* 当前所在 section：高亮子项 */
 .submenu-item-active {
-  background: rgba(var(--np-accent-rgb), 0.1);
-  border-color: rgba(var(--np-accent-rgb), 0.22) !important;
+  background: var(--np-active-bg);
+  border-color: var(--np-active-border) !important;
   color: var(--np-accent);
   font-weight: 600;
 }

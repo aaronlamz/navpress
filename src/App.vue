@@ -103,7 +103,8 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: var(--np-bg);
+  background: var(--np-ambient);
+  background-attachment: fixed;
 }
 
 .navbar {

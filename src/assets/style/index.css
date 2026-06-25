@@ -16,10 +16,14 @@
 
   /* 应用底色 */
   --np-bg: #f5f5f7;
+  /* 氛围背景（apple 预设下等于纯底色；liquid-glass 覆盖为彩色渐变） */
+  --np-ambient: var(--np-bg);
 
   /* 玻璃可调参数 */
   --np-glass-blur: 20px;
   --np-glass-saturate: 180%;
+  /* 组合滤镜：饱和度 + 亮度（液态玻璃下增强透色与通透） */
+  --np-glass-fx: saturate(180%);
 
   /* 玻璃表面 */
   --np-glass-nav-bg: rgba(251, 251, 253, 0.8);
@@ -35,6 +39,7 @@
   /* 液态玻璃质感（apple 预设下保持中性，等价旧观感） */
   --np-glass-highlight: transparent; /* 顶部镜面高光渐变 */
   --np-glass-edge: transparent;      /* 内描边亮线（inset 顶部 hairline） */
+  --np-glass-noise: none;            /* 磨砂颗粒纹理（liquid-glass 下启用） */
 
   /* 菜单项 */
   --np-item-bg: #ffffff;
@@ -43,6 +48,24 @@
   --np-item-hover-bg: #ffffff;
   --np-subitem-hover-bg: #f5f5f7;
   --np-subitem-hover-border: rgba(0, 0, 0, 0.06);
+
+  /* 选中态（当前模块 / 当前 section） */
+  --np-active-bg: rgba(var(--np-accent-rgb), 0.1);
+  --np-active-border: rgba(var(--np-accent-rgb), 0.28);
+  --np-active-shadow: 0 2px 10px rgba(var(--np-accent-rgb), 0.1);
+  --np-active-bar-w: 3px;
+
+  /* 内容区卡片 */
+  --np-card-blur: 0px;
+  --np-card-bg: #ffffff;
+  --np-card-border: rgba(0, 0, 0, 0.06);
+  --np-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --np-linkcard-bg: #f8fafc;
+  --np-linkcard-border: rgba(0, 0, 0, 0.04);
+  --np-linkcard-hover-bg: #ffffff;
+  --np-icon-bg: #f5f5f7;
+  --np-fab-bg: rgba(255, 255, 255, 0.8);
+  --np-fab-hover-bg: rgba(255, 255, 255, 0.95);
 
   /* Tooltip */
   --np-tooltip-bg: rgba(29, 29, 31, 0.94);
@@ -74,46 +97,127 @@
   --np-subitem-hover-bg: rgba(255, 255, 255, 0.06);
   --np-subitem-hover-border: rgba(255, 255, 255, 0.08);
 
+  --np-active-bg: rgba(var(--np-accent-rgb), 0.16);
+  --np-active-border: rgba(var(--np-accent-rgb), 0.3);
+  --np-active-shadow: none;
+
+  --np-card-bg: #1e293b;
+  --np-card-border: rgba(255, 255, 255, 0.06);
+  --np-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.25);
+  --np-linkcard-bg: rgba(255, 255, 255, 0.04);
+  --np-linkcard-border: rgba(255, 255, 255, 0.06);
+  --np-linkcard-hover-bg: rgba(255, 255, 255, 0.08);
+  --np-icon-bg: rgba(255, 255, 255, 0.08);
+  --np-fab-bg: rgba(28, 28, 30, 0.8);
+  --np-fab-hover-bg: rgba(28, 28, 30, 0.92);
+
   --np-tooltip-bg: rgba(245, 245, 247, 0.96);
   --np-tooltip-color: #1d1d1f;
 }
 
-/* ---------- 预设：液态玻璃（更通透 + 高光 + 亮边） ---------- */
+/* ---------- 预设：液态玻璃（iOS 风：彩色氛围背景 + 高通透 + 镜面高光 + 亮边） ---------- */
 [data-theme="liquid-glass"] {
-  --np-glass-blur: 28px;
-  --np-glass-saturate: 200%;
-  --np-glass-nav-bg: rgba(255, 255, 255, 0.5);
-  --np-glass-panel-bg: rgba(255, 255, 255, 0.42);
-  --np-glass-dropdown-bg: rgba(255, 255, 255, 0.55);
-  --np-glass-input-bg: rgba(255, 255, 255, 0.35);
-  --np-glass-border: rgba(255, 255, 255, 0.5);
-  --np-glass-dropdown-border: rgba(255, 255, 255, 0.6);
-  --np-glass-input-focus-bg: rgba(255, 255, 255, 0.6);
-  --np-glass-panel-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --np-glass-highlight: rgba(255, 255, 255, 0.7);
-  --np-glass-edge: rgba(255, 255, 255, 0.9);
-  --np-item-bg: rgba(255, 255, 255, 0.55);
-  --np-item-border: rgba(255, 255, 255, 0.6);
-  --np-item-hover-bg: rgba(255, 255, 255, 0.78);
-  --np-subitem-hover-bg: rgba(255, 255, 255, 0.6);
-  --np-subitem-hover-border: rgba(255, 255, 255, 0.7);
+  /* 柔和低饱和色雾：给毛玻璃可模糊的内容（不刺眼） */
+  --np-ambient:
+    radial-gradient(48rem 42rem at 4% -6%, rgba(120, 170, 255, 0.3), transparent 62%),
+    radial-gradient(44rem 40rem at 100% 6%, rgba(186, 158, 255, 0.24), transparent 62%),
+    radial-gradient(46rem 42rem at 92% 100%, rgba(130, 208, 232, 0.26), transparent 64%),
+    #eef1f7;
+
+  /* 磨砂颗粒：仅留极淡一层防色带，主要质感交给毛玻璃模糊 */
+  --np-glass-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+
+  --np-glass-blur: 44px;
+  --np-glass-saturate: 220%;
+  --np-glass-fx: saturate(210%) brightness(1.06);
+  --np-glass-nav-bg: rgba(255, 255, 255, 0.34);
+  --np-glass-panel-bg: rgba(255, 255, 255, 0.2);
+  --np-glass-dropdown-bg: rgba(255, 255, 255, 0.42);
+  --np-glass-input-bg: rgba(255, 255, 255, 0.24);
+  --np-glass-border: rgba(255, 255, 255, 0.6);
+  --np-glass-dropdown-border: rgba(255, 255, 255, 0.7);
+  --np-glass-input-focus-bg: rgba(255, 255, 255, 0.55);
+  --np-glass-panel-shadow: 0 10px 36px rgba(31, 38, 80, 0.16), 0 2px 8px rgba(31, 38, 80, 0.08);
+  --np-glass-highlight: rgba(255, 255, 255, 0.85);
+  --np-glass-edge: rgba(255, 255, 255, 1);
+  --np-item-bg: rgba(255, 255, 255, 0.62);
+  --np-item-border: rgba(255, 255, 255, 0.7);
+  --np-item-hover-bg: rgba(255, 255, 255, 0.85);
+  --np-subitem-hover-bg: rgba(255, 255, 255, 0.5);
+  --np-subitem-hover-border: rgba(255, 255, 255, 0.75);
+
+  /* 菜单项边框稍明显 */
+  --np-item-border: rgba(255, 255, 255, 0.8);
+
+  /* 选中态：毛玻璃上需更强对比 + 清晰边框 */
+  --np-active-bg:
+    linear-gradient(rgba(var(--np-accent-rgb), 0.32), rgba(var(--np-accent-rgb), 0.32)),
+    rgba(255, 255, 255, 0.55);
+  --np-active-border: rgba(var(--np-accent-rgb), 0.85);
+  --np-active-shadow:
+    0 4px 16px rgba(var(--np-accent-rgb), 0.28),
+    inset 0 0 0 1px rgba(var(--np-accent-rgb), 0.55);
+  --np-active-bar-w: 4px;
+
+  --np-card-blur: 26px;
+  --np-card-bg: rgba(255, 255, 255, 0.22);
+  /* 浅色下用淡中性细边框勾出模块轮廓（白边在浅底上看不见） */
+  --np-card-border: rgba(30, 41, 80, 0.12);
+  --np-card-shadow: 0 10px 36px rgba(31, 38, 80, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --np-linkcard-bg: rgba(255, 255, 255, 0.2);
+  --np-linkcard-border: rgba(30, 41, 80, 0.1);
+  --np-linkcard-hover-bg: rgba(255, 255, 255, 0.55);
+  --np-icon-bg: rgba(255, 255, 255, 0.45);
+  --np-fab-bg: rgba(255, 255, 255, 0.5);
+  --np-fab-hover-bg: rgba(255, 255, 255, 0.72);
 }
 [data-theme="liquid-glass"].dark {
-  --np-glass-nav-bg: rgba(20, 22, 28, 0.5);
-  --np-glass-panel-bg: rgba(20, 22, 28, 0.42);
-  --np-glass-dropdown-bg: rgba(28, 30, 38, 0.6);
+  --np-ambient:
+    radial-gradient(48rem 42rem at 4% -6%, rgba(70, 120, 230, 0.34), transparent 62%),
+    radial-gradient(44rem 40rem at 100% 6%, rgba(130, 80, 210, 0.28), transparent 62%),
+    radial-gradient(46rem 42rem at 92% 100%, rgba(40, 160, 170, 0.28), transparent 64%),
+    #0a0b12;
+
+  --np-glass-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+
+  --np-glass-fx: saturate(200%) brightness(1.12);
+  --np-glass-nav-bg: rgba(22, 24, 32, 0.42);
+  --np-glass-panel-bg: rgba(22, 24, 32, 0.34);
+  --np-glass-dropdown-bg: rgba(28, 30, 40, 0.55);
   --np-glass-input-bg: rgba(255, 255, 255, 0.1);
-  --np-glass-border: rgba(255, 255, 255, 0.14);
-  --np-glass-dropdown-border: rgba(255, 255, 255, 0.16);
+  --np-glass-border: rgba(255, 255, 255, 0.18);
+  --np-glass-dropdown-border: rgba(255, 255, 255, 0.2);
   --np-glass-input-focus-bg: rgba(255, 255, 255, 0.16);
-  --np-glass-panel-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
-  --np-glass-highlight: rgba(255, 255, 255, 0.16);
-  --np-glass-edge: rgba(255, 255, 255, 0.22);
-  --np-item-bg: rgba(255, 255, 255, 0.08);
-  --np-item-border: rgba(255, 255, 255, 0.12);
-  --np-item-hover-bg: rgba(255, 255, 255, 0.14);
+  --np-glass-panel-shadow: 0 10px 36px rgba(0, 0, 0, 0.5);
+  --np-glass-highlight: rgba(255, 255, 255, 0.22);
+  --np-glass-edge: rgba(255, 255, 255, 0.32);
+  --np-item-bg: rgba(255, 255, 255, 0.13);
+  --np-item-border: rgba(255, 255, 255, 0.22);
+  --np-item-hover-bg: rgba(255, 255, 255, 0.22);
   --np-subitem-hover-bg: rgba(255, 255, 255, 0.1);
-  --np-subitem-hover-border: rgba(255, 255, 255, 0.14);
+  --np-subitem-hover-border: rgba(255, 255, 255, 0.16);
+
+  --np-item-border: rgba(255, 255, 255, 0.24);
+
+  --np-active-bg:
+    linear-gradient(rgba(var(--np-accent-rgb), 0.36), rgba(var(--np-accent-rgb), 0.36)),
+    rgba(255, 255, 255, 0.06);
+  --np-active-border: rgba(var(--np-accent-rgb), 0.8);
+  --np-active-shadow:
+    0 4px 16px rgba(var(--np-accent-rgb), 0.32),
+    inset 0 0 0 1px rgba(var(--np-accent-rgb), 0.5);
+  --np-active-bar-w: 4px;
+
+  --np-card-blur: 20px;
+  --np-card-bg: rgba(28, 30, 40, 0.4);
+  --np-card-border: rgba(255, 255, 255, 0.22);
+  --np-card-shadow: 0 10px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  --np-linkcard-bg: rgba(255, 255, 255, 0.06);
+  --np-linkcard-border: rgba(255, 255, 255, 0.18);
+  --np-linkcard-hover-bg: rgba(255, 255, 255, 0.12);
+  --np-icon-bg: rgba(255, 255, 255, 0.1);
+  --np-fab-bg: rgba(28, 30, 40, 0.5);
+  --np-fab-hover-bg: rgba(28, 30, 40, 0.72);
 }
 
 /* Apple 风格字体 */

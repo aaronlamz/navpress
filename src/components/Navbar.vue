@@ -283,9 +283,9 @@ export default {
 
 <style scoped>
 .glass-nav {
-  background: var(--np-glass-nav-bg);
-  backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  background: var(--np-glass-noise), var(--np-glass-nav-bg);
+  backdrop-filter: blur(var(--np-glass-blur)) var(--np-glass-fx);
+  -webkit-backdrop-filter: blur(var(--np-glass-blur)) var(--np-glass-fx);
   border-bottom: 1px solid var(--np-glass-border);
   box-shadow: inset 0 -1px 0 var(--np-glass-edge);
 }
@@ -350,9 +350,9 @@ export default {
 }
 
 .glass-dropdown {
-  background: var(--np-glass-dropdown-bg);
-  backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
-  -webkit-backdrop-filter: blur(var(--np-glass-blur)) saturate(var(--np-glass-saturate));
+  background: var(--np-glass-noise), var(--np-glass-dropdown-bg);
+  backdrop-filter: blur(var(--np-glass-blur)) var(--np-glass-fx);
+  -webkit-backdrop-filter: blur(var(--np-glass-blur)) var(--np-glass-fx);
   border: 1px solid var(--np-glass-dropdown-border);
   box-shadow: var(--np-glass-dropdown-shadow), inset 0 1px 0 var(--np-glass-edge);
 }
